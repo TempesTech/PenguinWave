@@ -1,0 +1,380 @@
+Card #49
+	Name: alsa_card.usb-SteelSeries_Arctis_Nova_7-00
+	Driver: alsa
+	Owner Module: n/a
+	Properties:
+		device.enum.api = "udev"
+		device.api = "alsa"
+		media.class = "Audio/Device"
+		api.alsa.path = "hw:3"
+		api.alsa.card = "3"
+		api.alsa.card.name = "Arctis Nova 7"
+		api.alsa.card.longname = "SteelSeries Arctis Nova 7 at usb-0000:02:00.0-4.4, full speed"
+		device.plugged.usec = "12399606"
+		device.bus_path = "pci-0000:02:00.0-usb-0:4.4:1.0"
+		sysfs.path = "/devices/pci0000:00/0000:00:01.2/0000:02:00.0/usb1/1-4/1-4.4/1-4.4:1.0/sound/card3"
+		device.bus-id = "usb-SteelSeries_Arctis_Nova_7-00"
+		device.bus = "usb"
+		device.subsystem = "sound"
+		device.vendor.id = "0x1038"
+		device.vendor.name = "SteelSeries ApS"
+		device.product.id = "0x2202"
+		device.product.name = "Arctis Nova 7"
+		device.serial = "SteelSeries_Arctis_Nova_7"
+		device.form_factor = "headset"
+		device.name = "alsa_card.usb-SteelSeries_Arctis_Nova_7-00"
+		device.description = "Arctis Nova 7"
+		device.nick = "Arctis Nova 7"
+		device.icon_name = "audio-headset-analog-usb"
+		api.alsa.use-acp = "true"
+		api.acp.auto-profile = "false"
+		api.acp.auto-port = "false"
+		api.dbus.ReserveDevice1.Priority = "-20"
+		api.alsa.split-enable = "true"
+		api.dbus.ReserveDevice1 = "Audio3"
+		spa.object.id = "8"
+		factory.id = "15"
+		client.id = "42"
+		object.id = "49"
+		object.serial = "49"
+		object.path = "alsa:acp:A7"
+		alsa.card = "3"
+		alsa.card_name = "Arctis Nova 7"
+		alsa.long_card_name = "SteelSeries Arctis Nova 7 at usb-0000:02:00.0-4.4, full speed"
+		alsa.driver_name = "snd_usb_audio"
+		alsa.mixer_name = "USB Mixer"
+		alsa.components = "USB1038:2202"
+		alsa.id = "A7"
+		device.string = "3"
+	Profiles:
+		off: Off (sinks: 0, sources: 0, priority: 0, available: yes)
+		output:analog-stereo+input:mono-fallback: Analog Stereo Output + Mono Input (sinks: 1, sources: 1, priority: 6501, available: yes)
+		output:analog-stereo: Analog Stereo Output (sinks: 1, sources: 0, priority: 6500, available: yes)
+		output:iec958-stereo+input:mono-fallback: Digital Stereo (IEC958) Output + Mono Input (sinks: 1, sources: 1, priority: 5501, available: yes)
+		output:iec958-stereo: Digital Stereo (IEC958) Output (sinks: 1, sources: 0, priority: 5500, available: yes)
+		output:iec958-ac3-surround-51+input:mono-fallback: Digital Surround 5.1 (IEC958/AC3) Output + Mono Input (sinks: 1, sources: 1, priority: 301, available: yes)
+		output:iec958-ac3-surround-51: Digital Surround 5.1 (IEC958/AC3) Output (sinks: 1, sources: 0, priority: 300, available: yes)
+		pro-audio: Pro Audio (sinks: 1, sources: 1, priority: 1, available: yes)
+		input:mono-fallback: Mono Input (sinks: 0, sources: 1, priority: 1, available: yes)
+	Active Profile: output:analog-stereo+input:mono-fallback
+	Ports:
+		analog-input-mic: Microphone (type: Mic, priority: 8700, latency offset: 0 usec, availability unknown)
+			Properties:
+				port.type = "mic"
+				device.icon_name = "audio-input-microphone"
+				card.profile.port = "0"
+			Part of profile(s): input:mono-fallback, output:analog-stereo+input:mono-fallback, output:iec958-stereo+input:mono-fallback, output:iec958-ac3-surround-51+input:mono-fallback
+		analog-output: Analog Output (type: Analog, priority: 9900, latency offset: 0 usec, availability unknown)
+			Properties:
+				port.type = "analog"
+				card.profile.port = "1"
+			Part of profile(s): output:analog-stereo, output:analog-stereo+input:mono-fallback
+		iec958-stereo-output: Digital Output (S/PDIF) (type: SPDIF, priority: 0, latency offset: 0 usec, availability unknown)
+			Properties:
+				port.type = "spdif"
+				card.profile.port = "2"
+			Part of profile(s): output:iec958-stereo, output:iec958-stereo+input:mono-fallback
+
+Card #50
+	Name: alsa_card.pci-0000_08_00.1
+	Driver: alsa
+	Owner Module: n/a
+	Properties:
+		device.enum.api = "udev"
+		device.api = "alsa"
+		media.class = "Audio/Device"
+		api.alsa.path = "hw:1"
+		api.alsa.card = "1"
+		api.alsa.card.name = "HDA NVidia"
+		api.alsa.card.longname = "HDA NVidia at 0xfc080000 irq 116"
+		device.plugged.usec = "11689604"
+		device.bus_path = "pci-0000:08:00.1"
+		sysfs.path = "/devices/pci0000:00/0000:00:03.1/0000:08:00.1/sound/card1"
+		device.bus = "pci"
+		device.subsystem = "sound"
+		device.vendor.id = "0x10de"
+		device.vendor.name = "NVIDIA Corporation"
+		device.product.id = "0x22be"
+		device.product.name = "AD107 High Definition Audio Controller"
+		device.name = "alsa_card.pci-0000_08_00.1"
+		device.description = "AD107 High Definition Audio Controller"
+		device.nick = "HDA NVidia"
+		device.icon_name = "audio-card-analog-pci"
+		api.alsa.use-acp = "true"
+		api.acp.auto-profile = "false"
+		api.acp.auto-port = "false"
+		api.dbus.ReserveDevice1.Priority = "-20"
+		api.alsa.split-enable = "true"
+		api.dbus.ReserveDevice1 = "Audio1"
+		spa.object.id = "4"
+		factory.id = "15"
+		client.id = "42"
+		object.id = "50"
+		object.serial = "50"
+		object.path = "alsa:acp:NVidia"
+		alsa.card = "1"
+		alsa.card_name = "HDA NVidia"
+		alsa.long_card_name = "HDA NVidia at 0xfc080000 irq 116"
+		alsa.driver_name = "snd_hda_intel"
+		alsa.mixer_name = "Nvidia GPU a7 HDMI/DP"
+		alsa.components = "HDA:10de00a7,1458410a,00100100"
+		alsa.id = "NVidia"
+		device.string = "1"
+	Profiles:
+		off: Off (sinks: 0, sources: 0, priority: 0, available: yes)
+		output:hdmi-stereo: Digital Stereo (HDMI) Output (sinks: 1, sources: 0, priority: 5900, available: yes)
+		output:hdmi-stereo-extra1: Digital Stereo (HDMI 2) Output (sinks: 1, sources: 0, priority: 5700, available: yes)
+		output:hdmi-stereo-extra2: Digital Stereo (HDMI 3) Output (sinks: 1, sources: 0, priority: 5700, available: no)
+		output:hdmi-stereo-extra3: Digital Stereo (HDMI 4) Output (sinks: 1, sources: 0, priority: 5700, available: no)
+		output:hdmi-surround-extra2: Digital Surround 5.1 (HDMI 3) Output (sinks: 1, sources: 0, priority: 600, available: no)
+		output:hdmi-surround71-extra2: Digital Surround 7.1 (HDMI 3) Output (sinks: 1, sources: 0, priority: 600, available: no)
+		output:hdmi-surround-extra3: Digital Surround 5.1 (HDMI 4) Output (sinks: 1, sources: 0, priority: 600, available: no)
+		output:hdmi-surround71-extra3: Digital Surround 7.1 (HDMI 4) Output (sinks: 1, sources: 0, priority: 600, available: no)
+		pro-audio: Pro Audio (sinks: 4, sources: 0, priority: 1, available: yes)
+	Active Profile: output:hdmi-stereo
+	Ports:
+		hdmi-output-0: HDMI / DisplayPort (type: HDMI, priority: 5900, latency offset: 0 usec, availability group: Legacy 1, available)
+			Properties:
+				port.type = "hdmi"
+				port.availability-group = "Legacy 1"
+				device.icon_name = "video-display"
+				card.profile.port = "0"
+				device.product.name = "27G64"
+				iec958.codecs.detected = "[\"PCM\"]"
+				audio.channels.detected = "2"
+				audio.position.detected = "[FL,FR]"
+			Part of profile(s): output:hdmi-stereo
+		hdmi-output-1: HDMI / DisplayPort 2 (type: HDMI, priority: 5800, latency offset: 0 usec, availability group: Legacy 2, available)
+			Properties:
+				port.type = "hdmi"
+				port.availability-group = "Legacy 2"
+				device.icon_name = "video-display"
+				card.profile.port = "1"
+				device.product.name = "27G64"
+				iec958.codecs.detected = "[\"PCM\"]"
+				audio.channels.detected = "2"
+				audio.position.detected = "[FL,FR]"
+			Part of profile(s): output:hdmi-stereo-extra1
+		hdmi-output-2: HDMI / DisplayPort 3 (type: HDMI, priority: 5700, latency offset: 0 usec, availability group: Legacy 3, not available)
+			Properties:
+				port.type = "hdmi"
+				port.availability-group = "Legacy 3"
+				device.icon_name = "video-display"
+				card.profile.port = "2"
+			Part of profile(s): output:hdmi-stereo-extra2, output:hdmi-surround-extra2, output:hdmi-surround71-extra2
+		hdmi-output-3: HDMI / DisplayPort 4 (type: HDMI, priority: 5600, latency offset: 0 usec, availability group: Legacy 4, not available)
+			Properties:
+				port.type = "hdmi"
+				port.availability-group = "Legacy 4"
+				device.icon_name = "video-display"
+				card.profile.port = "3"
+			Part of profile(s): output:hdmi-stereo-extra3, output:hdmi-surround-extra3, output:hdmi-surround71-extra3
+
+Card #51
+	Name: alsa_card.usb-HP__Inc_HyperX_DuoCast_000000000000-00
+	Driver: alsa
+	Owner Module: n/a
+	Properties:
+		device.enum.api = "udev"
+		device.api = "alsa"
+		media.class = "Audio/Device"
+		api.alsa.path = "hw:0"
+		api.alsa.card = "0"
+		api.alsa.card.name = "HyperX DuoCast"
+		api.alsa.card.longname = "HP, Inc HyperX DuoCast at usb-0000:0a:00.3-3.3.4, high speed"
+		device.plugged.usec = "12142124"
+		device.bus_path = "pci-0000:0a:00.3-usb-0:3.3.4:1.0"
+		sysfs.path = "/devices/pci0000:00/0000:00:08.1/0000:0a:00.3/usb3/3-3/3-3.3/3-3.3.4/3-3.3.4:1.0/sound/card0"
+		device.bus-id = "usb-HP__Inc_HyperX_DuoCast_000000000000-00"
+		device.bus = "usb"
+		device.subsystem = "sound"
+		device.vendor.id = "0x03f0"
+		device.vendor.name = "HP, Inc"
+		device.product.id = "0x0a8c"
+		device.product.name = "HyperX DuoCast"
+		device.serial = "HP__Inc_HyperX_DuoCast_000000000000"
+		device.name = "alsa_card.usb-HP__Inc_HyperX_DuoCast_000000000000-00"
+		device.description = "HyperX DuoCast"
+		device.nick = "HyperX DuoCast"
+		device.icon_name = "audio-card-analog-usb"
+		api.alsa.use-acp = "true"
+		api.acp.auto-profile = "false"
+		api.acp.auto-port = "false"
+		api.dbus.ReserveDevice1.Priority = "-20"
+		api.alsa.split-enable = "true"
+		api.dbus.ReserveDevice1 = "Audio0"
+		spa.object.id = "2"
+		factory.id = "15"
+		client.id = "42"
+		object.id = "51"
+		object.serial = "51"
+		object.path = "alsa:acp:DuoCast"
+		alsa.card = "0"
+		alsa.card_name = "HyperX DuoCast"
+		alsa.long_card_name = "HP, Inc HyperX DuoCast at usb-0000:0a:00.3-3.3.4, high speed"
+		alsa.driver_name = "snd_usb_audio"
+		alsa.mixer_name = "USB Mixer"
+		alsa.components = "USB03f0:0a8c"
+		alsa.id = "DuoCast"
+		device.string = "0"
+	Profiles:
+		off: Off (sinks: 0, sources: 0, priority: 0, available: yes)
+		output:analog-stereo+input:analog-stereo: Analog Stereo Duplex (sinks: 1, sources: 1, priority: 6565, available: yes)
+		output:analog-stereo+input:iec958-stereo: Analog Stereo Output + Digital Stereo (IEC958) Input (sinks: 1, sources: 1, priority: 6555, available: yes)
+		output:analog-stereo: Analog Stereo Output (sinks: 1, sources: 0, priority: 6500, available: yes)
+		output:iec958-stereo+input:analog-stereo: Digital Stereo (IEC958) Output + Analog Stereo Input (sinks: 1, sources: 1, priority: 5565, available: yes)
+		output:iec958-stereo+input:iec958-stereo: Digital Stereo Duplex (IEC958) (sinks: 1, sources: 1, priority: 5555, available: yes)
+		output:iec958-stereo: Digital Stereo (IEC958) Output (sinks: 1, sources: 0, priority: 5500, available: yes)
+		input:analog-stereo: Analog Stereo Input (sinks: 0, sources: 1, priority: 65, available: yes)
+		input:iec958-stereo: Digital Stereo (IEC958) Input (sinks: 0, sources: 1, priority: 55, available: yes)
+		pro-audio: Pro Audio (sinks: 1, sources: 1, priority: 1, available: yes)
+	Active Profile: output:analog-stereo+input:analog-stereo
+	Ports:
+		analog-input-mic: Microphone (type: Mic, priority: 8700, latency offset: 0 usec, availability unknown)
+			Properties:
+				port.type = "mic"
+				device.icon_name = "audio-input-microphone"
+				card.profile.port = "0"
+			Part of profile(s): input:analog-stereo, output:analog-stereo+input:analog-stereo, output:iec958-stereo+input:analog-stereo
+		iec958-stereo-input: Digital Input (S/PDIF) (type: SPDIF, priority: 0, latency offset: 0 usec, availability unknown)
+			Properties:
+				port.type = "spdif"
+				card.profile.port = "1"
+			Part of profile(s): input:iec958-stereo, output:analog-stereo+input:iec958-stereo, output:iec958-stereo+input:iec958-stereo
+		analog-output: Analog Output (type: Analog, priority: 9900, latency offset: 0 usec, availability unknown)
+			Properties:
+				port.type = "analog"
+				card.profile.port = "2"
+			Part of profile(s): output:analog-stereo, output:analog-stereo+input:analog-stereo, output:analog-stereo+input:iec958-stereo
+		iec958-stereo-output: Digital Output (S/PDIF) (type: SPDIF, priority: 0, latency offset: 0 usec, availability unknown)
+			Properties:
+				port.type = "spdif"
+				card.profile.port = "3"
+			Part of profile(s): output:iec958-stereo, output:iec958-stereo+input:analog-stereo, output:iec958-stereo+input:iec958-stereo
+
+Card #52
+	Name: alsa_card.pci-0000_0a_00.4
+	Driver: alsa
+	Owner Module: n/a
+	Properties:
+		device.enum.api = "udev"
+		device.api = "alsa"
+		media.class = "Audio/Device"
+		api.alsa.path = "hw:2"
+		api.alsa.card = "2"
+		api.alsa.card.name = "HD-Audio Generic"
+		api.alsa.card.longname = "HD-Audio Generic at 0xfc900000 irq 118"
+		device.plugged.usec = "11682960"
+		device.bus_path = "pci-0000:0a:00.4"
+		sysfs.path = "/devices/pci0000:00/0000:00:08.1/0000:0a:00.4/sound/card2"
+		device.bus = "pci"
+		device.subsystem = "sound"
+		device.vendor.id = "0x1022"
+		device.vendor.name = "Advanced Micro Devices, Inc. [AMD]"
+		device.product.id = "0x1487"
+		device.product.name = "Starship/Matisse HD Audio Controller"
+		device.name = "alsa_card.pci-0000_0a_00.4"
+		device.description = "Starship/Matisse HD Audio Controller"
+		device.nick = "HD-Audio Generic"
+		device.icon_name = "audio-card-analog-pci"
+		api.alsa.use-acp = "true"
+		api.acp.auto-profile = "false"
+		api.acp.auto-port = "false"
+		api.dbus.ReserveDevice1.Priority = "-20"
+		api.alsa.split-enable = "true"
+		api.dbus.ReserveDevice1 = "Audio2"
+		spa.object.id = "6"
+		factory.id = "15"
+		client.id = "42"
+		object.id = "52"
+		object.serial = "52"
+		object.path = "alsa:acp:Generic"
+		alsa.card = "2"
+		alsa.card_name = "HD-Audio Generic"
+		alsa.long_card_name = "HD-Audio Generic at 0xfc900000 irq 118"
+		alsa.driver_name = "snd_hda_intel"
+		alsa.mixer_name = "Realtek ALC897"
+		alsa.components = "HDA:10ec0897,1458a194,00100402"
+		alsa.id = "Generic"
+		device.string = "2"
+	Profiles:
+		off: Off (sinks: 0, sources: 0, priority: 0, available: yes)
+		output:analog-stereo+input:analog-stereo: Analog Stereo Duplex (sinks: 1, sources: 1, priority: 6565, available: no)
+		output:analog-stereo: Analog Stereo Output (sinks: 1, sources: 0, priority: 6500, available: no)
+		input:analog-stereo: Analog Stereo Input (sinks: 0, sources: 1, priority: 65, available: no)
+		pro-audio: Pro Audio (sinks: 1, sources: 2, priority: 1, available: yes)
+	Active Profile: off
+	Ports:
+		analog-input-front-mic: Front Microphone (type: Mic, priority: 8500, latency offset: 0 usec, availability group: Legacy 1, not available)
+			Properties:
+				port.type = "mic"
+				port.availability-group = "Legacy 1"
+				device.icon_name = "audio-input-microphone"
+				card.profile.port = "0"
+			Part of profile(s): input:analog-stereo, output:analog-stereo+input:analog-stereo
+		analog-input-rear-mic: Rear Microphone (type: Mic, priority: 8200, latency offset: 0 usec, availability group: Legacy 2, not available)
+			Properties:
+				port.type = "mic"
+				port.availability-group = "Legacy 2"
+				device.icon_name = "audio-input-microphone"
+				card.profile.port = "1"
+			Part of profile(s): input:analog-stereo, output:analog-stereo+input:analog-stereo
+		analog-input-linein: Line In (type: Line, priority: 8100, latency offset: 0 usec, availability group: Legacy 3, not available)
+			Properties:
+				port.type = "line"
+				port.availability-group = "Legacy 3"
+				card.profile.port = "2"
+			Part of profile(s): input:analog-stereo, output:analog-stereo+input:analog-stereo
+		analog-output-lineout: Line Out (type: Line, priority: 9000, latency offset: 0 usec, availability group: Legacy 4, not available)
+			Properties:
+				port.type = "line"
+				port.availability-group = "Legacy 4"
+				card.profile.port = "3"
+			Part of profile(s): output:analog-stereo, output:analog-stereo+input:analog-stereo
+		analog-output-headphones: Headphones (type: Headphones, priority: 9900, latency offset: 0 usec, availability group: Legacy 5, not available)
+			Properties:
+				port.type = "headphones"
+				port.availability-group = "Legacy 5"
+				device.icon_name = "audio-headphones"
+				card.profile.port = "4"
+			Part of profile(s): output:analog-stereo, output:analog-stereo+input:analog-stereo
+
+Card #1943
+	Name: bluez_card.AA_BB_CC_DD_EE_FF
+	Driver: module-bluez5-device.c
+	Owner Module: n/a
+	Properties:
+		device.api = "bluez5"
+		device.bus = "bluetooth"
+		media.class = "Audio/Device"
+		device.name = "bluez_card.AA_BB_CC_DD_EE_FF"
+		device.description = "Living Room speaker"
+		device.alias = "Living Room speaker"
+		device.vendor.id = "bluetooth:000f"
+		device.product.id = "0x1200"
+		device.form_factor = "unknown"
+		device.icon_name = "audio-card-bluetooth"
+		device.string = "AA:BB:CC:DD:EE:FF"
+		api.bluez5.icon = "audio-card"
+		api.bluez5.path = "/org/bluez/hci0/dev_AA_BB_CC_DD_EE_FF"
+		api.bluez5.address = "AA:BB:CC:DD:EE:FF"
+		api.bluez5.device = ""
+		api.bluez5.class = "0x2c0400"
+		api.bluez5.connection = "connected"
+		bluez5.profile = "off"
+		spa.object.id = "1"
+		factory.id = "15"
+		client.id = "42"
+		object.id = "130"
+		object.serial = "1943"
+	Profiles:
+		off: Off (sinks: 0, sources: 0, priority: 0, available: yes)
+		a2dp-sink-sbc: High Fidelity Playback (A2DP Sink, codec SBC) (sinks: 1, sources: 0, priority: 130, available: yes)
+		a2dp-sink-sbc_xq: High Fidelity Playback (A2DP Sink, codec SBC-XQ) (sinks: 1, sources: 0, priority: 129, available: yes)
+		a2dp-sink: High Fidelity Playback (A2DP Sink, codec AAC) (sinks: 1, sources: 0, priority: 131, available: yes)
+	Active Profile: a2dp-sink
+	Ports:
+		bluetooth-output: Bluetooth (type: Bluetooth, priority: 0, latency offset: 0 usec, available)
+			Properties:
+				port.type = "bluetooth"
+			Part of profile(s): a2dp-sink-sbc, a2dp-sink-sbc_xq, a2dp-sink

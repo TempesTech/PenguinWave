@@ -1,0 +1,20 @@
+Midi-Bridge:Midi Through: Port-0 (playback)
+alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo:playback_FL
+alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo:playback_FR
+bluez_midi.server:in
+game_sink:playback_FL
+game_sink:playback_FR
+alsa_output.pci-0000_08_00.1.hdmi-stereo:playback_FL
+alsa_output.pci-0000_08_00.1.hdmi-stereo:playback_FR
+alsa_output.usb-HP__Inc_HyperX_DuoCast_000000000000-00.analog-stereo:playback_FL
+alsa_output.usb-HP__Inc_HyperX_DuoCast_000000000000-00.analog-stereo:playback_FR
+chat_sink:playback_FL
+chat_sink:playback_FR
+penguinwave_eq_chat:input_FL
+penguinwave_eq_chat:input_FR
+penguinwave_eq_game:input_FL
+penguinwave_eq_game:input_FR
+bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FL
+bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR
+cava:input_FL
+cava:input_FR

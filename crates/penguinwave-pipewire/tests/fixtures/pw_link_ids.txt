@@ -1,0 +1,54 @@
+  48 alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo:playback_FL
+  99   |<-   95 penguinwave_eq_chat_out:output_FL
+ 194   |<-  115 penguinwave_eq_game_out:output_FL
+  66 alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo:playback_FR
+ 116   |<-   94 penguinwave_eq_chat_out:output_FR
+ 195   |<-  110 penguinwave_eq_game_out:output_FR
+  72 game_sink:monitor_FL
+ 113   |->  118 penguinwave_eq_game:input_FL
+  73 game_sink:monitor_FR
+ 112   |->   93 penguinwave_eq_game:input_FR
+  88 chat_sink:monitor_FL
+ 100   |->  103 penguinwave_eq_chat:input_FL
+  89 chat_sink:monitor_FR
+ 104   |->  102 penguinwave_eq_chat:input_FR
+ 103 penguinwave_eq_chat:input_FL
+ 100   |<-   88 chat_sink:monitor_FL
+ 102 penguinwave_eq_chat:input_FR
+ 104   |<-   89 chat_sink:monitor_FR
+  95 penguinwave_eq_chat_out:output_FL
+  99   |->   48 alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo:playback_FL
+ 192   |->  128 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FL
+  94 penguinwave_eq_chat_out:output_FR
+ 116   |->   66 alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo:playback_FR
+ 193   |->  127 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR
+ 118 penguinwave_eq_game:input_FL
+ 113   |<-   72 game_sink:monitor_FL
+  93 penguinwave_eq_game:input_FR
+ 112   |<-   73 game_sink:monitor_FR
+ 115 penguinwave_eq_game_out:output_FL
+ 194   |->   48 alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo:playback_FL
+ 177   |->  128 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FL
+ 110 penguinwave_eq_game_out:output_FR
+ 195   |->   66 alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo:playback_FR
+ 145   |->  127 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR
+ 148 bluez_output.AA_BB_CC_DD_EE_FF.1:monitor_FL
+ 137   |->  139 cava:input_FL
+ 146 bluez_output.AA_BB_CC_DD_EE_FF.1:monitor_FR
+ 120   |->  160 cava:input_FR
+ 128 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FL
+ 192   |<-   95 penguinwave_eq_chat_out:output_FL
+ 177   |<-  115 penguinwave_eq_game_out:output_FL
+ 152   |<-  155 Brave:output_FL
+ 127 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR
+ 193   |<-   94 penguinwave_eq_chat_out:output_FR
+ 145   |<-  110 penguinwave_eq_game_out:output_FR
+ 154   |<-  167 Brave:output_FR
+ 155 Brave:output_FL
+ 152   |->  128 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FL
+ 167 Brave:output_FR
+ 154   |->  127 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR
+ 139 cava:input_FL
+ 137   |<-  148 bluez_output.AA_BB_CC_DD_EE_FF.1:monitor_FL
+ 160 cava:input_FR
+ 120   |<-  146 bluez_output.AA_BB_CC_DD_EE_FF.1:monitor_FR

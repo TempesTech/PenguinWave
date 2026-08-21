@@ -1,0 +1,3 @@
+190	57	-	PipeWire	float32le 2ch 48000Hz
+192	57	-	PipeWire	float32le 2ch 48000Hz
+2732	1944	2731	PipeWire	float32le 2ch 48000Hz

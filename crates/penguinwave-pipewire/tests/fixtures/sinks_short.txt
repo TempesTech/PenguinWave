@@ -1,0 +1,6 @@
+57	alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo	PipeWire	s24le 2ch 48000Hz	RUNNING
+63	game_sink	PipeWire	float32le 2ch 48000Hz	IDLE
+64	alsa_output.pci-0000_08_00.1.hdmi-stereo	PipeWire	s32le 2ch 48000Hz	SUSPENDED
+66	alsa_output.usb-HP__Inc_HyperX_DuoCast_000000000000-00.analog-stereo	PipeWire	s24le 2ch 48000Hz	SUSPENDED
+69	chat_sink	PipeWire	float32le 2ch 48000Hz	IDLE
+1944	bluez_output.AA_BB_CC_DD_EE_FF.1	PipeWire	s16le 2ch 48000Hz	RUNNING

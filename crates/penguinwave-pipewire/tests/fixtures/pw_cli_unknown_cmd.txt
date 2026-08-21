@@ -1,0 +1,1 @@
+Error: "Command "dump" does not exist. Type 'help' for usage."

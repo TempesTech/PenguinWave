@@ -1,0 +1,143 @@
+Sink Input #190
+	Driver: PipeWire
+	Owner Module: n/a
+	Client: n/a
+	Sink: 57
+	Sample Specification: float32le 2ch 48000Hz
+	Channel Map: front-left,front-right
+	Format: pcm, format.sample_format = "\"float32ne\""  format.rate = "48000"  format.channels = "2"  format.channel_map = "\"front-left,front-right\""
+	Corked: no
+	Mute: no
+	Volume: front-left: 65536 / 100% / 0,00 dB,   front-right: 65536 / 100% / 0,00 dB
+	        balance 0,00
+	Buffer Latency: 0 usec
+	Sink Latency: 0 usec
+	Resample method: PipeWire
+	Properties:
+		node.name = "penguinwave_eq_chat_out"
+		node.passive = "true"
+		audio.channels = "2"
+		audio.position = "[ FL FR ]"
+		device.description = "PenguinWave EQ (Chat)"
+		node.group = "filter-chain-4943-9"
+		node.link-group = "filter-chain-4943-9"
+		node.virtual = "true"
+		media.name = "PenguinWave EQ (Chat)"
+		resample.prefill = "true"
+		resample.disable = "true"
+		stream.is-live = "true"
+		node.want-driver = "true"
+		node.autoconnect = "true"
+		node.trigger = "true"
+		media.class = "Stream/Output/Audio"
+		port.group = "stream.0"
+		adapt.follower.spa-node = ""
+		object.register = "false"
+		factory.id = "7"
+		clock.quantum-limit = "8192"
+		node.loop.name = "data-loop.0"
+		library.name = "audioconvert/libspa-audioconvert"
+		client.id = "109"
+		object.id = "107"
+		object.serial = "190"
+		node.driver-id = "46"
+		module-stream-restore.id = "sink-input-by-media-name:PenguinWave EQ (Chat)"
+
+Sink Input #192
+	Driver: PipeWire
+	Owner Module: n/a
+	Client: n/a
+	Sink: 57
+	Sample Specification: float32le 2ch 48000Hz
+	Channel Map: front-left,front-right
+	Format: pcm, format.sample_format = "\"float32ne\""  format.rate = "48000"  format.channels = "2"  format.channel_map = "\"front-left,front-right\""
+	Corked: no
+	Mute: no
+	Volume: front-left: 65536 / 100% / 0,00 dB,   front-right: 65536 / 100% / 0,00 dB
+	        balance 0,00
+	Buffer Latency: 0 usec
+	Sink Latency: 0 usec
+	Resample method: PipeWire
+	Properties:
+		node.name = "penguinwave_eq_game_out"
+		node.passive = "true"
+		audio.channels = "2"
+		audio.position = "[ FL FR ]"
+		device.description = "PenguinWave EQ (Game)"
+		node.group = "filter-chain-4943-8"
+		node.link-group = "filter-chain-4943-8"
+		node.virtual = "true"
+		media.name = "PenguinWave EQ (Game)"
+		resample.prefill = "true"
+		resample.disable = "true"
+		stream.is-live = "true"
+		node.want-driver = "true"
+		node.autoconnect = "true"
+		node.trigger = "true"
+		media.class = "Stream/Output/Audio"
+		port.group = "stream.0"
+		adapt.follower.spa-node = ""
+		object.register = "false"
+		factory.id = "7"
+		clock.quantum-limit = "8192"
+		node.loop.name = "data-loop.0"
+		library.name = "audioconvert/libspa-audioconvert"
+		client.id = "97"
+		object.id = "96"
+		object.serial = "192"
+		node.driver-id = "46"
+		module-stream-restore.id = "sink-input-by-media-name:PenguinWave EQ (Game)"
+
+Sink Input #2732
+	Driver: PipeWire
+	Owner Module: n/a
+	Client: 2731
+	Sink: 1944
+	Sample Specification: float32le 2ch 48000Hz
+	Channel Map: front-left,front-right
+	Format: pcm, format.sample_format = "\"float32le\""  format.rate = "48000"  format.channels = "2"  format.channel_map = "\"front-left,front-right\""
+	Corked: no
+	Mute: no
+	Volume: front-left: 65536 / 100% / 0,00 dB,   front-right: 65536 / 100% / 0,00 dB
+	        balance 0,00
+	Buffer Latency: 0 usec
+	Sink Latency: 0 usec
+	Resample method: PipeWire
+	Properties:
+		client.api = "pipewire-pulse"
+		pulse.server.type = "unix"
+		application.name = "Brave"
+		application.process.id = "15192"
+		application.process.user = "testuser"
+		application.process.host = "testhost"
+		application.process.binary = "brave"
+		application.language = "en_US.UTF-8"
+		window.x11.display = ":0"
+		application.process.machine_id = "b9db28ca51df4c13b252d2e59326e128"
+		application.process.session_id = "3"
+		application.icon_name = "brave-browser"
+		media.name = "Playback"
+		pulse.corked = "false"
+		node.rate = "1/48000"
+		node.latency = "1024/48000"
+		stream.is-live = "true"
+		node.name = "Brave"
+		node.want-driver = "true"
+		node.autoconnect = "true"
+		media.class = "Stream/Output/Audio"
+		port.group = "stream.0"
+		adapt.follower.spa-node = ""
+		object.register = "false"
+		factory.id = "7"
+		clock.quantum-limit = "8192"
+		node.loop.name = "data-loop.0"
+		library.name = "audioconvert/libspa-audioconvert"
+		client.id = "126"
+		object.id = "136"
+		object.serial = "2732"
+		pulse.attr.maxlength = "4194304"
+		pulse.attr.tlength = "16384"
+		pulse.attr.prebuf = "12296"
+		pulse.attr.minreq = "4096"
+		node.driver-id = "46"
+		module-stream-restore.id = "sink-input-by-application-name:Brave"
