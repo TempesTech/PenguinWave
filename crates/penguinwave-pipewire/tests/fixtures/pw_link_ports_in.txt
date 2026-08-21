@@ -16,5 +16,3 @@ penguinwave_eq_game:input_FL
 penguinwave_eq_game:input_FR
 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FL
 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR
-cava:input_FL
-cava:input_FR

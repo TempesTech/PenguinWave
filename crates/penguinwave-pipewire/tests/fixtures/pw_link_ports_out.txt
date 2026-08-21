@@ -23,7 +23,9 @@ penguinwave_eq_game_out:output_FL
 penguinwave_eq_game_out:output_FR
 bluez_output.AA_BB_CC_DD_EE_FF.1:monitor_FL
 bluez_output.AA_BB_CC_DD_EE_FF.1:monitor_FR
-Brave:output_FL
-Brave:output_FR
-cava:monitor_FL
-cava:monitor_FR
+Marvel's Spider-Man 2:output_FL
+Marvel's Spider-Man 2:output_FR
+Marvel's Spider-Man 2:output_FL
+Marvel's Spider-Man 2:output_FR
+Marvel's Spider-Man 2:output_FL
+Marvel's Spider-Man 2:output_FR

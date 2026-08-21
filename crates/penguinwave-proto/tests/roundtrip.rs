@@ -482,6 +482,7 @@ fn pref() -> PortRef {
     PortRef {
         node_name: "n".into(),
         port_name: "p".into(),
+        id: Some(7),
     }
 }
 fn band() -> EqBand {

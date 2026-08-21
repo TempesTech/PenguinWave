@@ -32,23 +32,27 @@
  110 penguinwave_eq_game_out:output_FR
  195   |->   66 alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo:playback_FR
  145   |->  127 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR
- 148 bluez_output.AA_BB_CC_DD_EE_FF.1:monitor_FL
- 137   |->  139 cava:input_FL
- 146 bluez_output.AA_BB_CC_DD_EE_FF.1:monitor_FR
- 120   |->  160 cava:input_FR
  128 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FL
  192   |<-   95 penguinwave_eq_chat_out:output_FL
  177   |<-  115 penguinwave_eq_game_out:output_FL
- 152   |<-  155 Brave:output_FL
+ 134   |<-  140 Marvel's Spider-Man 2:output_FL
+ 152   |<-  131 Marvel's Spider-Man 2:output_FL
+ 120   |<-  155 Marvel's Spider-Man 2:output_FL
  127 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR
  193   |<-   94 penguinwave_eq_chat_out:output_FR
  145   |<-  110 penguinwave_eq_game_out:output_FR
- 154   |<-  167 Brave:output_FR
- 155 Brave:output_FL
+ 123   |<-  136 Marvel's Spider-Man 2:output_FR
+ 167   |<-  158 Marvel's Spider-Man 2:output_FR
+ 160   |<-  154 Marvel's Spider-Man 2:output_FR
+ 140 Marvel's Spider-Man 2:output_FL
+ 134   |->  128 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FL
+ 136 Marvel's Spider-Man 2:output_FR
+ 123   |->  127 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR
+ 131 Marvel's Spider-Man 2:output_FL
  152   |->  128 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FL
- 167 Brave:output_FR
- 154   |->  127 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR
- 139 cava:input_FL
- 137   |<-  148 bluez_output.AA_BB_CC_DD_EE_FF.1:monitor_FL
- 160 cava:input_FR
- 120   |<-  146 bluez_output.AA_BB_CC_DD_EE_FF.1:monitor_FR
+ 158 Marvel's Spider-Man 2:output_FR
+ 167   |->  127 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR
+ 155 Marvel's Spider-Man 2:output_FL
+ 120   |->  128 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FL
+ 154 Marvel's Spider-Man 2:output_FR
+ 160   |->  127 bluez_output.AA_BB_CC_DD_EE_FF.1:playback_FR

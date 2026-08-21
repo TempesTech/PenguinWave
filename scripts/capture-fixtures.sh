@@ -59,7 +59,10 @@ scrub "$(id -un)"   "testuser"           "username"
 scrub "$(hostname)" "testhost"           "hostname"
 scrub '([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}' 'AA:BB:CC:DD:EE:FF' "MAC (colon form)"
 scrub '([0-9A-Fa-f]{2}_){5}[0-9A-Fa-f]{2}' 'AA_BB_CC_DD_EE_FF' "MAC (underscore form)"
-scrub '[0-9]{12}'   "000000000000"       "device serials"
+# Anchored to the underscore that precedes a serial in an ALSA device name
+# (`..._DuoCast_202011110001-00`). An unanchored digit run also matches inside
+# legitimate numbers: it rewrote i64::MIN in pw-dump into invalid JSON.
+scrub '_[0-9]{10,}' "_000000000000"      "device serials"
 
 # Fail loudly rather than committing a leak.
 leaks=0
@@ -75,5 +78,12 @@ if grep -rqE '([0-9A-Fa-f]{2}[:_]){5}[0-9A-Fa-f]{2}' "$DEST" \
     leaks=1
 fi
 [ $leaks -eq 0 ] || exit 1
+
+# Scrubbing rewrites bytes inside files that still have to parse.
+for f in "$DEST"/*.json; do
+    [ -e "$f" ] || continue
+    python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" \
+        || { echo "error: $f is not valid JSON after scrubbing" >&2; exit 1; }
+done
 
 echo "fixtures clean"

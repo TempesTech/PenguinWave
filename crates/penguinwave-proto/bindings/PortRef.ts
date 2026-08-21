@@ -2,5 +2,9 @@
 
 /**
  * One end of a link, in `pw-link`'s `node:port` form.
+ *
+ * Node names are not unique: several nodes of one application share a name,
+ * so `node_name:port_name` can match more than one port. Prefer `id` when
+ * present; the names are for display and for `pw-link`'s own CLI form.
  */
-export type PortRef = { node_name: string, port_name: string, };
+export type PortRef = { node_name: string, port_name: string, id?: number | null, };

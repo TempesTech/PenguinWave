@@ -1,8 +1,8 @@
 57	alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo.monitor	PipeWire	s24le 2ch 48000Hz	RUNNING
 58	alsa_input.usb-SteelSeries_Arctis_Nova_7-00.mono-fallback	PipeWire	s16le 1ch 48000Hz	SUSPENDED
-63	game_sink.monitor	PipeWire	float32le 2ch 48000Hz	IDLE
+63	game_sink.monitor	PipeWire	float32le 2ch 48000Hz	SUSPENDED
 64	alsa_output.pci-0000_08_00.1.hdmi-stereo.monitor	PipeWire	s32le 2ch 48000Hz	SUSPENDED
 66	alsa_output.usb-HP__Inc_HyperX_DuoCast_000000000000-00.analog-stereo.monitor	PipeWire	s24le 2ch 48000Hz	SUSPENDED
 67	alsa_input.usb-HP__Inc_HyperX_DuoCast_000000000000-00.analog-stereo	PipeWire	s24le 2ch 48000Hz	SUSPENDED
-69	chat_sink.monitor	PipeWire	float32le 2ch 48000Hz	IDLE
+69	chat_sink.monitor	PipeWire	float32le 2ch 48000Hz	SUSPENDED
 1944	bluez_output.AA_BB_CC_DD_EE_FF.1.monitor	PipeWire	s16le 2ch 48000Hz	RUNNING

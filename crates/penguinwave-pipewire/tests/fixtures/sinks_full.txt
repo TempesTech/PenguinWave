@@ -64,9 +64,9 @@ Sink #57
 		object.id = "46"
 		object.serial = "57"
 		node.max-latency = "16384/48000"
-		api.alsa.period-size = "256"
-		api.alsa.period-num = "128"
-		api.alsa.headroom = "256"
+		api.alsa.period-size = "128"
+		api.alsa.period-num = "256"
+		api.alsa.headroom = "128"
 		device.enum.api = "udev"
 		api.alsa.card = "3"
 		device.plugged.usec = "12399606"
@@ -97,7 +97,7 @@ Sink #57
 		pcm
 
 Sink #63
-	State: IDLE
+	State: SUSPENDED
 	Name: game_sink
 	Description: Game
 	Driver: PipeWire
@@ -321,7 +321,7 @@ Sink #66
 		pcm
 
 Sink #69
-	State: IDLE
+	State: SUSPENDED
 	Name: chat_sink
 	Description: Chat
 	Driver: PipeWire

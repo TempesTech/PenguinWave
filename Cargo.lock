@@ -49,6 +49,8 @@ name = "penguinwave-pipewire"
 version = "0.3.0"
 dependencies = [
  "penguinwave-proto",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

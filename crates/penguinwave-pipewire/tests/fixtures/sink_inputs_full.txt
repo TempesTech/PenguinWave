@@ -6,7 +6,7 @@ Sink Input #190
 	Sample Specification: float32le 2ch 48000Hz
 	Channel Map: front-left,front-right
 	Format: pcm, format.sample_format = "\"float32ne\""  format.rate = "48000"  format.channels = "2"  format.channel_map = "\"front-left,front-right\""
-	Corked: no
+	Corked: yes
 	Mute: no
 	Volume: front-left: 65536 / 100% / 0,00 dB,   front-right: 65536 / 100% / 0,00 dB
 	        balance 0,00
@@ -51,7 +51,7 @@ Sink Input #192
 	Sample Specification: float32le 2ch 48000Hz
 	Channel Map: front-left,front-right
 	Format: pcm, format.sample_format = "\"float32ne\""  format.rate = "48000"  format.channels = "2"  format.channel_map = "\"front-left,front-right\""
-	Corked: no
+	Corked: yes
 	Mute: no
 	Volume: front-left: 65536 / 100% / 0,00 dB,   front-right: 65536 / 100% / 0,00 dB
 	        balance 0,00
@@ -88,10 +88,10 @@ Sink Input #192
 		node.driver-id = "46"
 		module-stream-restore.id = "sink-input-by-media-name:PenguinWave EQ (Game)"
 
-Sink Input #2732
+Sink Input #2976
 	Driver: PipeWire
 	Owner Module: n/a
-	Client: 2731
+	Client: 2975
 	Sink: 1944
 	Sample Specification: float32le 2ch 48000Hz
 	Channel Map: front-left,front-right
@@ -106,22 +106,21 @@ Sink Input #2732
 	Properties:
 		client.api = "pipewire-pulse"
 		pulse.server.type = "unix"
-		application.name = "Brave"
-		application.process.id = "15192"
+		application.name = "Marvel's Spider-Man 2"
+		application.process.id = "284433"
 		application.process.user = "testuser"
 		application.process.host = "testhost"
-		application.process.binary = "brave"
+		application.process.binary = "wine64-preloader"
 		application.language = "en_US.UTF-8"
 		window.x11.display = ":0"
 		application.process.machine_id = "b9db28ca51df4c13b252d2e59326e128"
 		application.process.session_id = "3"
-		application.icon_name = "brave-browser"
-		media.name = "Playback"
+		media.name = "audio stream #1"
 		pulse.corked = "false"
 		node.rate = "1/48000"
-		node.latency = "1024/48000"
+		node.latency = "256/48000"
 		stream.is-live = "true"
-		node.name = "Brave"
+		node.name = "Marvel's Spider-Man 2"
 		node.want-driver = "true"
 		node.autoconnect = "true"
 		media.class = "Stream/Output/Audio"
@@ -132,12 +131,118 @@ Sink Input #2732
 		clock.quantum-limit = "8192"
 		node.loop.name = "data-loop.0"
 		library.name = "audioconvert/libspa-audioconvert"
-		client.id = "126"
-		object.id = "136"
-		object.serial = "2732"
-		pulse.attr.maxlength = "4194304"
-		pulse.attr.tlength = "16384"
-		pulse.attr.prebuf = "12296"
-		pulse.attr.minreq = "4096"
+		client.id = "141"
+		object.id = "174"
+		object.serial = "2976"
+		pulse.attr.maxlength = "11520"
+		pulse.attr.tlength = "9600"
+		pulse.attr.prebuf = "0"
+		pulse.attr.minreq = "3840"
 		node.driver-id = "46"
-		module-stream-restore.id = "sink-input-by-application-name:Brave"
+		module-stream-restore.id = "sink-input-by-application-name:Marvel's Spider-Man 2"
+
+Sink Input #2981
+	Driver: PipeWire
+	Owner Module: n/a
+	Client: 2975
+	Sink: 1944
+	Sample Specification: float32le 2ch 48000Hz
+	Channel Map: front-left,front-right
+	Format: pcm, format.sample_format = "\"float32le\""  format.rate = "48000"  format.channels = "2"  format.channel_map = "\"front-left,front-right\""
+	Corked: no
+	Mute: no
+	Volume: front-left: 65536 / 100% / 0,00 dB,   front-right: 65536 / 100% / 0,00 dB
+	        balance 0,00
+	Buffer Latency: 0 usec
+	Sink Latency: 0 usec
+	Resample method: PipeWire
+	Properties:
+		client.api = "pipewire-pulse"
+		pulse.server.type = "unix"
+		application.name = "Marvel's Spider-Man 2"
+		application.process.id = "284433"
+		application.process.user = "testuser"
+		application.process.host = "testhost"
+		application.process.binary = "wine64-preloader"
+		application.language = "en_US.UTF-8"
+		window.x11.display = ":0"
+		application.process.machine_id = "b9db28ca51df4c13b252d2e59326e128"
+		application.process.session_id = "3"
+		media.name = "audio stream #2"
+		pulse.corked = "false"
+		node.rate = "1/48000"
+		node.latency = "256/48000"
+		stream.is-live = "true"
+		node.name = "Marvel's Spider-Man 2"
+		node.want-driver = "true"
+		node.autoconnect = "true"
+		media.class = "Stream/Output/Audio"
+		port.group = "stream.0"
+		adapt.follower.spa-node = ""
+		object.register = "false"
+		factory.id = "7"
+		clock.quantum-limit = "8192"
+		node.loop.name = "data-loop.0"
+		library.name = "audioconvert/libspa-audioconvert"
+		client.id = "141"
+		object.id = "126"
+		object.serial = "2981"
+		pulse.attr.maxlength = "11520"
+		pulse.attr.tlength = "9600"
+		pulse.attr.prebuf = "0"
+		pulse.attr.minreq = "3840"
+		node.driver-id = "46"
+		module-stream-restore.id = "sink-input-by-application-name:Marvel's Spider-Man 2"
+
+Sink Input #2990
+	Driver: PipeWire
+	Owner Module: n/a
+	Client: 2975
+	Sink: 1944
+	Sample Specification: float32le 2ch 48000Hz
+	Channel Map: front-left,front-right
+	Format: pcm, format.sample_format = "\"float32le\""  format.rate = "48000"  format.channels = "2"  format.channel_map = "\"front-left,front-right\""
+	Corked: no
+	Mute: no
+	Volume: front-left: 65536 / 100% / 0,00 dB,   front-right: 65536 / 100% / 0,00 dB
+	        balance 0,00
+	Buffer Latency: 0 usec
+	Sink Latency: 0 usec
+	Resample method: PipeWire
+	Properties:
+		client.api = "pipewire-pulse"
+		pulse.server.type = "unix"
+		application.name = "Marvel's Spider-Man 2"
+		application.process.id = "284433"
+		application.process.user = "testuser"
+		application.process.host = "testhost"
+		application.process.binary = "wine64-preloader"
+		application.language = "en_US.UTF-8"
+		window.x11.display = ":0"
+		application.process.machine_id = "b9db28ca51df4c13b252d2e59326e128"
+		application.process.session_id = "3"
+		media.name = "audio stream #3"
+		pulse.corked = "false"
+		node.rate = "1/48000"
+		node.latency = "256/48000"
+		stream.is-live = "true"
+		node.name = "Marvel's Spider-Man 2"
+		node.want-driver = "true"
+		node.autoconnect = "true"
+		media.class = "Stream/Output/Audio"
+		port.group = "stream.0"
+		adapt.follower.spa-node = ""
+		object.register = "false"
+		factory.id = "7"
+		clock.quantum-limit = "8192"
+		node.loop.name = "data-loop.0"
+		library.name = "audioconvert/libspa-audioconvert"
+		client.id = "141"
+		object.id = "135"
+		object.serial = "2990"
+		pulse.attr.maxlength = "16384"
+		pulse.attr.tlength = "9600"
+		pulse.attr.prebuf = "0"
+		pulse.attr.minreq = "3840"
+		node.driver-id = "46"
+		module-stream-restore.id = "sink-input-by-application-name:Marvel's Spider-Man 2"

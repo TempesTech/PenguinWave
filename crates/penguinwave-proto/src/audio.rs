@@ -94,11 +94,17 @@ pub struct PortInfo {
 }
 
 /// One end of a link, in `pw-link`'s `node:port` form.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
+///
+/// Node names are not unique: several nodes of one application share a name,
+/// so `node_name:port_name` can match more than one port. Prefer `id` when
+/// present; the names are for display and for `pw-link`'s own CLI form.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct PortRef {
     pub node_name: String,
     pub port_name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<u32>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
