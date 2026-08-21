@@ -6,6 +6,6 @@ import type { SinkInfo } from "./SinkInfo";
 import type { StreamInfo } from "./StreamInfo";
 
 /**
- * Daemon -> client, unsolicited.
+ * Unsolicited push.
  */
 export type EventFrame = { v: number, } & ({ "event": "chatmix.changed", "data": ChatMix } | { "event": "eq.state_changed", "data": EqState } | { "event": "eq.safe_mode", "data": { active: boolean, } } | { "event": "graph.changed" } | { "event": "stream.list_changed", "data": { streams: Array<StreamInfo>, } } | { "event": "sink.list_changed", "data": { sinks: Array<SinkInfo>, } } | { "event": "device.attached", "data": { device: DeviceId, } } | { "event": "device.detached", "data": { device: DeviceId, } } | { "event": "daemon.shutting_down" });

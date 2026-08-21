@@ -4,14 +4,10 @@ import type { EqChainId } from "./EqChainId";
 
 export type EqState = { 
 /**
- * Keyed by chain. `EqChainId` is a unit-only enum, so it serialises as a
- * JSON string and is legal as an object key; the round-trip is pinned by
- * a test because a non-string key would fail at runtime, not compile time.
+ * `EqChainId` must stay a unit-only enum: JSON object keys are strings.
  */
 chains: { [key in EqChainId]?: EqChain }, 
 /**
- * Set when the filter chain failed to load and audio was routed around
- * the EQ to keep sound working. Persisted on disk so it survives a daemon
- * crash, which is the case it exists for.
+ * Filter chain failed to load; audio is routed around the EQ.
  */
 safe_mode: boolean, };

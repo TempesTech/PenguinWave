@@ -2,7 +2,4 @@
 import type { Capability } from "./Capability";
 import type { DevicePresence } from "./DevicePresence";
 
-/**
- * A headset model the daemon knows how to talk to.
- */
 export type DeviceDescriptor = { name: string, presence: DevicePresence, capabilities: Array<Capability>, vendor_id: number, product_id: number, };

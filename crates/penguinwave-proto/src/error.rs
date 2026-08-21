@@ -1,9 +1,4 @@
 //! Structured errors.
-//!
-//! Before the split every failure reached the UI as an opaque string, so a
-//! headset being unplugged looked exactly like a broken `pactl` invocation.
-//! The distinction drives UX: [`ErrorKind::DeviceAbsent`] is a state the UI
-//! renders calmly, [`ErrorKind::PipeWireFailed`] is a bug report.
 
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -12,34 +7,25 @@ use ts_rs::TS;
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub enum ErrorKind {
-    /// Client speaks a protocol version this daemon does not support.
-    /// Terminal: the connection closes after this is sent.
+    /// Unsupported protocol version. Terminal: the connection closes.
     VersionMismatch,
-    /// Malformed frame, unknown method, or parameters that do not validate.
+    /// Malformed frame, unknown method, or invalid parameters.
     BadRequest,
-    /// Named sink, stream, preset, port or device does not exist.
     NotFound,
-    /// Headset not plugged in or powered off. Expected, not a failure.
+    /// Headset unplugged or powered off. Expected, not a failure.
     DeviceAbsent,
-    /// The audio server is down or unreachable.
     PipeWireUnavailable,
     /// A backend command ran and failed.
     PipeWireFailed,
-    /// Needs elevation the daemon deliberately does not have — typically a
-    /// missing udev rule.
+    /// Needs elevation the daemon does not have, typically a missing udev rule.
     PermissionDenied,
-    /// State changed between a client's read and its write. With concurrent
-    /// clients a stream can vanish mid-request; refetch and retry.
+    /// State changed between read and write; refetch and retry.
     Conflict,
-    /// A bug in the daemon.
     Internal,
 }
 
 impl ErrorKind {
-    /// Whether retrying the identical request could plausibly succeed.
-    ///
-    /// `Conflict` is retryable only after refetching state, which is why the
-    /// client-facing advice differs from a blind retry.
+    /// Whether retrying could succeed. `Conflict` requires a refetch first.
     pub fn retryable(&self) -> bool {
         matches!(
             self,
@@ -47,8 +33,7 @@ impl ErrorKind {
         )
     }
 
-    /// Process exit code for `penguinwave-cli`, so scripts can branch on the
-    /// failure class without parsing text.
+    /// Exit code for `penguinwave-cli`. Scripting contract; do not renumber.
     pub fn exit_code(&self) -> i32 {
         match self {
             ErrorKind::VersionMismatch => 3,
@@ -70,8 +55,7 @@ pub struct PwError {
     pub kind: ErrorKind,
     pub msg: String,
     pub retryable: bool,
-    /// Set on [`ErrorKind::VersionMismatch`]: the range the daemon speaks, so
-    /// the client can report something actionable instead of "connection lost".
+    /// Set on [`ErrorKind::VersionMismatch`]: the range the daemon speaks.
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub supported: Option<(u16, u16)>,
 }

@@ -3,7 +3,6 @@ import type { ErrorKind } from "./ErrorKind";
 
 export type PwError = { kind: ErrorKind, msg: string, retryable: boolean, 
 /**
- * Set on [`ErrorKind::VersionMismatch`]: the range the daemon speaks, so
- * the client can report something actionable instead of "connection lost".
+ * Set on [`ErrorKind::VersionMismatch`]: the range the daemon speaks.
  */
 supported?: [number, number] | null, };

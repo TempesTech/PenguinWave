@@ -3,6 +3,6 @@ import type { DevicePresence } from "./DevicePresence";
 
 export type BatteryInfo = { presence: DevicePresence, 
 /**
- * Percent 0..=100, or `None` when unknown.
+ * Percent 0..=100.
  */
 level: number | null, };

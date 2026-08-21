@@ -2,9 +2,5 @@
 
 /**
  * Whether a device is reachable right now.
- *
- * Split out of the old `DeviceStatus`, which conflated "unplugged" with "HID
- * read failed". The daemon reports the first as an ordinary state transition
- * the UI renders calmly, and the second as an error worth logging.
  */
 export type DevicePresence = "connected" | "absent" | "faulted";

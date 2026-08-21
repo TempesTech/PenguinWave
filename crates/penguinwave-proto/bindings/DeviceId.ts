@@ -2,9 +2,5 @@
 
 /**
  * Stable identity of a headset.
- *
- * Replaces the `selected_device: i8` index into a `Vec` used before the
- * daemon split. An index silently retargets whenever the device list changes
- * order or length; a `(vendor, product)` pair does not.
  */
 export type DeviceId = { vendor_id: number, product_id: number, };

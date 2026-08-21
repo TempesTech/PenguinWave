@@ -3,6 +3,6 @@ import type { PwError } from "./PwError";
 import type { Response } from "./Response";
 
 /**
- * Daemon -> client, in reply to a [`RequestFrame`].
+ * Reply to a [`RequestFrame`].
  */
 export type ResponseFrame = { v: number, id: number, } & ({ "ok": Response } | { "err": PwError });

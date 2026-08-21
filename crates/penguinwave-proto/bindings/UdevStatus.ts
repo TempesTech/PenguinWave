@@ -2,15 +2,10 @@
 
 /**
  * Whether the udev rule granting HID access is installed.
- *
- * When missing, the daemon returns the command for the client to run under
- * its own polkit agent. The daemon never invokes `pkexec` itself: it runs
- * unprivileged, always, and acquiring root even transiently would make the
- * socket's `0600` permission the wrong security boundary.
  */
 export type UdevStatus = { installed: boolean, 
 /**
- * Populated when `installed` is false: the exact argv the client should
- * run with elevation.
+ * Argv for the client to run with elevation. The daemon never calls
+ * `pkexec` itself; it stays unprivileged.
  */
 install_command: Array<string> | null, };

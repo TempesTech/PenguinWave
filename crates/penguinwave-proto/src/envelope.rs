@@ -1,8 +1,4 @@
-//! NDJSON frames.
-//!
-//! One compact JSON value per line, `\n` terminated, UTF-8. `serde_json`
-//! compact output never contains a bare newline, so the framing is unambiguous
-//! and a session is readable with `socat` when something goes wrong.
+//! NDJSON frames: one compact JSON value per line, `\n` terminated, UTF-8.
 
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -12,29 +8,22 @@ use crate::event::Event;
 use crate::request::Request;
 use crate::response::Response;
 
-/// Client -> daemon.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct RequestFrame {
-    /// Protocol version. Checked on every message, not just at handshake: a
-    /// client that reconnects to an upgraded daemon must fail loudly on its
-    /// first real request rather than partway through a routing change.
+    /// Checked on every message, not just at handshake.
     pub v: u16,
-    /// Client-chosen, echoed back. Requests may be pipelined and responses may
-    /// return out of order, so clients must correlate on this rather than
-    /// assuming FIFO.
+    /// Client-chosen, echoed back. Responses may arrive out of order.
     ///
-    /// `u32`, not `u64`, on purpose: ts-rs maps `u64` to `bigint`, and
-    /// `JSON.stringify` throws on a `BigInt`. A 64-bit id would break every
-    /// request the browser client sends. Four billion requests per session is
-    /// not a limit anyone will reach.
+    /// `u32` not `u64`: ts-rs maps `u64` to `bigint`, which `JSON.stringify`
+    /// rejects.
     pub id: u32,
     #[serde(flatten)]
     #[ts(flatten)]
     pub request: Request,
 }
 
-/// Daemon -> client, in reply to a [`RequestFrame`].
+/// Reply to a [`RequestFrame`].
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct ResponseFrame {
@@ -53,7 +42,7 @@ pub enum ResponsePayload {
     Err(PwError),
 }
 
-/// Daemon -> client, unsolicited.
+/// Unsolicited push.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct EventFrame {
@@ -100,7 +89,7 @@ impl EventFrame {
     }
 }
 
-/// Whether this build can speak the version on an incoming frame.
+/// Whether this build speaks the version on an incoming frame.
 pub fn version_supported(v: u16) -> bool {
     let (lo, hi) = crate::PROTO_SUPPORTED;
     v >= lo && v <= hi

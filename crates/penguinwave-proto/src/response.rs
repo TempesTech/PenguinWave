@@ -1,10 +1,7 @@
 //! Daemon -> client results.
 //!
-//! Self-describing (`kind` + `data`) rather than bare payloads correlated only
-//! by request id. Responses cost one extra field and buy two things: a frame
-//! read out of `socat` is interpretable on its own, and a client that
-//! mis-tracks its own ids gets a decode error instead of silently parsing a
-//! sink list as a stream list.
+//! Self-describing (`kind` + `data`) so a frame is interpretable without
+//! knowing which request it answers.
 
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -14,8 +11,6 @@ use crate::device::{ChatMix, DeviceDescriptor, DeviceId, SystemDeps, UdevStatus,
 use crate::eq::{EqPresetMeta, EqState};
 
 /// Everything a client needs to render from cold.
-///
-/// Returned by `session.snapshot` on connect and on every reconnect.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct Snapshot {
@@ -29,14 +24,13 @@ pub struct Snapshot {
     pub eq: EqState,
 }
 
-/// Daemon identity, returned from `session.hello`.
+/// Returned from `session.hello`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct Hello {
     pub daemon: String,
     /// Inclusive protocol range this daemon speaks.
     pub proto: (u16, u16),
-    /// Optional feature flags, so clients can degrade rather than guess.
     pub caps: Vec<String>,
 }
 
@@ -44,8 +38,7 @@ pub struct Hello {
 #[serde(tag = "kind", content = "data", rename_all = "snake_case")]
 #[ts(export)]
 pub enum Response {
-    /// Acknowledged, nothing to return. The resulting state change arrives as
-    /// an event, including to the client that caused it.
+    /// Acknowledged; the state change arrives as an event.
     Empty,
     Hello(Hello),
     Snapshot(Snapshot),
@@ -64,6 +57,6 @@ pub enum Response {
     EqPresets(Vec<EqPresetMeta>),
     SystemDeps(SystemDeps),
     UdevStatus(UdevStatus),
-    /// base64 PNG for one icon key, or `None` when the key resolves to nothing.
+    /// base64 PNG.
     Icon(Option<String>),
 }

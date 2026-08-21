@@ -1,14 +1,6 @@
 //! Parametric EQ: bands, chains, presets.
 //!
-//! Lifted from the pre-split `eq/model.rs`, which was already `serde`-derived
-//! and free of Tauri types. The clamping helpers come along because they
-//! express range invariants that both sides of the socket must agree on: a
-//! client that clamps differently to the daemon produces silent disagreement
-//! about what was actually applied.
-//!
-//! Filter-chain *node names* deliberately do not live here. They are a detail
-//! of how the backend realises a chain in PipeWire, not part of the contract
-//! between daemon and client.
+//! Clamping lives here so client and daemon agree on the same ranges.
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -55,7 +47,6 @@ impl EqBand {
     }
 }
 
-/// Which of the two managed chains a request refers to.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize, TS)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
@@ -84,7 +75,7 @@ pub struct EqChain {
 }
 
 impl EqChain {
-    /// 10 flat peaking bands at ISO centre frequencies — the "graphic EQ" default.
+    /// 10 flat peaking bands at ISO centre frequencies.
     pub fn default_10_band() -> Self {
         const ISO_FREQS: [f32; 10] = [
             31.0, 62.0, 125.0, 250.0, 500.0, 1_000.0, 2_000.0, 4_000.0, 8_000.0, 16_000.0,
@@ -116,13 +107,9 @@ impl EqChain {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct EqState {
-    /// Keyed by chain. `EqChainId` is a unit-only enum, so it serialises as a
-    /// JSON string and is legal as an object key; the round-trip is pinned by
-    /// a test because a non-string key would fail at runtime, not compile time.
+    /// `EqChainId` must stay a unit-only enum: JSON object keys are strings.
     pub chains: HashMap<EqChainId, EqChain>,
-    /// Set when the filter chain failed to load and audio was routed around
-    /// the EQ to keep sound working. Persisted on disk so it survives a daemon
-    /// crash, which is the case it exists for.
+    /// Filter chain failed to load; audio is routed around the EQ.
     pub safe_mode: bool,
 }
 

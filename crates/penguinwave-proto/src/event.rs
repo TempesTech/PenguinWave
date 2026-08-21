@@ -1,15 +1,7 @@
 //! Daemon -> client pushes.
 //!
-//! Rule the daemon must hold to: **every method that mutates state emits an
-//! event, including back to the client that caused it.** Without the self-echo
-//! a client needs two state-update paths (its own optimistic write, plus
-//! events from everyone else) and a local-echo special case to reconcile them.
-//! With it there is exactly one path. The bug this prevents is invisible until
-//! a second client connects, which is precisely when it is hardest to debug.
-//!
-//! The four events that existed pre-split were enough for a single client that
-//! polled for everything else. They are not enough once the CLI, the UI and
-//! scripts can all mutate concurrently.
+//! Every mutating method emits an event, including back to the client that
+//! caused it, so clients have one state-update path rather than two.
 
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -31,14 +23,12 @@ pub enum Event {
     #[ts(rename = "eq.state_changed")]
     EqStateChanged(EqState),
 
-    /// Filter chain failed to load and audio was routed around the EQ, or
-    /// recovered.
+    /// Safe mode entered or cleared.
     #[serde(rename = "eq.safe_mode")]
     #[ts(rename = "eq.safe_mode")]
     EqSafeMode { active: bool },
 
-    /// The PipeWire graph changed — links, nodes or the default sink. Debounced
-    /// by the daemon; a burst of server activity coalesces into one event.
+    /// Links, nodes or the default sink changed. Debounced.
     #[serde(rename = "graph.changed")]
     #[ts(rename = "graph.changed")]
     GraphChanged,
@@ -48,7 +38,7 @@ pub enum Event {
     #[ts(rename = "stream.list_changed")]
     StreamListChanged { streams: Vec<StreamInfo> },
 
-    /// A sink was created or deleted — possibly by another client.
+    /// A sink was created or deleted, possibly by another client.
     #[serde(rename = "sink.list_changed")]
     #[ts(rename = "sink.list_changed")]
     SinkListChanged { sinks: Vec<SinkInfo> },
@@ -61,16 +51,14 @@ pub enum Event {
     #[ts(rename = "device.detached")]
     DeviceDetached { device: DeviceId },
 
-    /// Planned stop, as opposed to a crash. Managed sinks and the EQ chain are
-    /// deliberately left running, so this means "control is going away", not
-    /// "your audio is about to break".
+    /// Planned stop. Managed sinks and the EQ chain are left running.
     #[serde(rename = "daemon.shutting_down")]
     #[ts(rename = "daemon.shutting_down")]
     DaemonShuttingDown,
 }
 
 impl Event {
-    /// Wire name, for subscription matching against `session.subscribe`.
+    /// Wire name, for subscription matching.
     pub fn name(&self) -> &'static str {
         match self {
             Event::ChatmixChanged(_) => "chatmix.changed",

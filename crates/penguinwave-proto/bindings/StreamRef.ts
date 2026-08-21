@@ -3,18 +3,7 @@
 /**
  * Identifies a playback stream.
  *
- * Deliberately not a bare index. PulseAudio recycles sink-input indices the
- * moment a stream dies, so a client holding a stale index can silently
- * retarget the wrong application. `index` is the fast path; the rest is
- * revalidated before any mutation, and a mismatch is reported as
- * [`crate::error::ErrorKind::Conflict`] rather than acted on.
+ * Not a bare index: PulseAudio recycles sink-input indices, so `app_name` and
+ * `pid` are revalidated before any mutation.
  */
-export type StreamRef = { index: number, 
-/**
- * `application.name` as reported when the client last saw the stream.
- */
-app_name: string, 
-/**
- * Owning process id, when the audio server reports one.
- */
-pid: number | null, };
+export type StreamRef = { index: number, app_name: string, pid: number | null, };

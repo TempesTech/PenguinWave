@@ -9,7 +9,5 @@ import type { UserDevice } from "./UserDevice";
 
 /**
  * Everything a client needs to render from cold.
- *
- * Returned by `session.snapshot` on connect and on every reconnect.
  */
 export type Snapshot = { streams: Array<StreamInfo>, sinks: Array<SinkInfo>, default_sink: string, devices: Array<DeviceDescriptor>, selected_device: DeviceId | null, user_devices: Array<UserDevice>, chatmix: ChatMix, eq: EqState, };
