@@ -295,3 +295,16 @@ pub fn parse_ports_from_dump(json: &str) -> Result<Vec<PortInfo>, serde_json::Er
 pub fn is_tool_error(output: &str) -> bool {
     output.trim_start().starts_with("Error:")
 }
+
+/// Node id for a node name, from `pw-dump` JSON.
+pub fn node_id_for(json: &str, node_name: &str) -> Option<u32> {
+    let objects: Vec<serde_json::Value> = serde_json::from_str(json).ok()?;
+    objects
+        .iter()
+        .find(|o| {
+            o["type"].as_str() == Some("PipeWire:Interface:Node")
+                && o["info"]["props"]["node.name"].as_str() == Some(node_name)
+        })
+        .and_then(|o| o["id"].as_u64())
+        .map(|id| id as u32)
+}

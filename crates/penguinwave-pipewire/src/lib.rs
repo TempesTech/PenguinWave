@@ -5,11 +5,12 @@
 //! be replaced with native bindings without touching them.
 
 pub mod backend;
+pub mod cmd;
 pub mod icons;
 pub mod pactl;
 pub mod parse;
 pub mod watch;
 
 pub use backend::PipeWireBackend;
-// pub use pactl::PactlBackend;  // P1.3
+pub use pactl::PactlBackend;
 pub use watch::{EventSink, WatchHandle};

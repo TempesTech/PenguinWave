@@ -243,6 +243,6 @@ fn fields_and_properties_do_not_bleed() {
     let game = blocks.iter().find(|b| b.id == 63).unwrap();
     assert_eq!(game.field("Name"), Some("game_sink"));
     assert_eq!(game.prop("factory.name"), Some("support.null-audio-sink"));
-    assert!(game.fields.get("node.name").is_none());
-    assert!(game.props.get("Name").is_none());
+    assert!(!game.fields.contains_key("node.name"));
+    assert!(!game.props.contains_key("Name"));
 }
