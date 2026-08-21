@@ -1,0 +1,11 @@
+[package]
+name = "penguinwave-hid"
+description = "HID device support for Penguin Wave: headset traits, models, and the device registry."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+penguinwave-proto = { workspace = true }

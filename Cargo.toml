@@ -1,0 +1,28 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/penguinwave-proto",
+    "crates/penguinwave-pipewire",
+    "crates/penguinwave-hid",
+    "crates/penguinwave-core",
+    "crates/penguinwave-daemon",
+    "crates/penguinwave-cli",
+]
+
+[workspace.package]
+version = "0.3.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/TempesTech/PenguinWave"
+rust-version = "1.85"
+
+[workspace.dependencies]
+penguinwave-proto = { path = "crates/penguinwave-proto" }
+penguinwave-pipewire = { path = "crates/penguinwave-pipewire" }
+penguinwave-hid = { path = "crates/penguinwave-hid" }
+penguinwave-core = { path = "crates/penguinwave-core" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+ts-rs = "12"

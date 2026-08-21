@@ -1,0 +1,15 @@
+[package]
+name = "penguinwave-cli"
+description = "Penguin Wave command line client. Speaks to penguinwave-daemon over its unix socket."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "penguinwave-cli"
+path = "src/main.rs"
+
+[dependencies]
+penguinwave-proto = { workspace = true }

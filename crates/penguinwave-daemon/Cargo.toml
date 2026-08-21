@@ -1,0 +1,15 @@
+[package]
+name = "penguinwave-daemon"
+description = "Penguin Wave audio daemon: unix socket server over penguinwave-core."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "penguinwave-daemon"
+path = "src/main.rs"
+
+[dependencies]
+penguinwave-proto = { workspace = true }

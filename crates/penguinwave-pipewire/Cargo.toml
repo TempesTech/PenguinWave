@@ -1,0 +1,11 @@
+[package]
+name = "penguinwave-pipewire"
+description = "PipeWire backend for Penguin Wave: PipeWireBackend trait and its pactl implementation."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+penguinwave-proto = { workspace = true }
