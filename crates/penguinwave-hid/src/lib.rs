@@ -1,7 +1,19 @@
 //! HID headset support.
 //!
-//! Sole owner of `hidapi`. Holds the device trait, per-model implementations,
+//! Sole owner of `hidapi`. Holds the headset trait, per-model implementations,
 //! and the registry that tracks which devices are present and which one is
 //! selected.
-//!
-//! Filled in at P2. See `claudedocs/workflow_daemon_split.md`.
+
+pub mod error;
+pub mod headset;
+pub mod mock;
+pub mod models;
+pub mod registry;
+pub mod transport;
+pub mod userdev;
+
+pub use error::{HidError, Result};
+pub use headset::Headset;
+pub use mock::MockBackend;
+pub use registry::{DeviceChange, DeviceRegistry};
+pub use transport::{HidApiBackend, HidBackend, HidTransport};

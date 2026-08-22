@@ -85,7 +85,13 @@ fn icon_lookup_latency() {
     use penguinwave_pipewire::icons;
     use std::time::Instant;
 
-    let keys = ["firefox", "brave-browser", "steam", "code", "definitely-missing-xyz"];
+    let keys = [
+        "firefox",
+        "brave-browser",
+        "steam",
+        "code",
+        "definitely-missing-xyz",
+    ];
 
     for key in keys {
         let start = Instant::now();

@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 /// Stable identity of a headset.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, TS)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct DeviceId {
     pub vendor_id: u16,
