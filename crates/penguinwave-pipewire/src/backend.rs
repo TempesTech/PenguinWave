@@ -5,6 +5,7 @@ use penguinwave_proto::{
     StreamInfo, StreamRef,
 };
 
+use crate::chain::ChainProcess;
 use crate::watch::{EventSink, WatchHandle};
 
 pub type Result<T> = std::result::Result<T, PwError>;
@@ -44,6 +45,9 @@ pub trait PipeWireBackend: Send + Sync {
     // node params, used by the EQ live-coefficient path
     fn resolve_node_id(&self, node_name: &str) -> Result<u32>;
     fn set_node_props(&self, node_id: u32, props: &[(String, f32)]) -> Result<()>;
+
+    /// Start the EQ filter chain from a generated config file.
+    fn spawn_filter_chain(&self, conf_path: &std::path::Path) -> Result<Box<dyn ChainProcess>>;
 
     // liveness
     fn probe(&self) -> Result<ServerInfo>;

@@ -5,6 +5,7 @@
 //! be replaced with native bindings without touching them.
 
 pub mod backend;
+pub mod chain;
 pub mod cmd;
 pub mod icons;
 pub mod mock;
@@ -13,6 +14,7 @@ pub mod parse;
 pub mod watch;
 
 pub use backend::PipeWireBackend;
+pub use chain::ChainProcess;
 pub use mock::MockBackend;
 pub use pactl::PactlBackend;
 pub use watch::{EventSink, WatchHandle};

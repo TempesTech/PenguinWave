@@ -91,6 +91,9 @@ dependencies = [
  "penguinwave-hid",
  "penguinwave-pipewire",
  "penguinwave-proto",
+ "serde",
+ "serde_json",
+ "thiserror",
 ]
 
 [[package]]
@@ -115,6 +118,7 @@ dependencies = [
 name = "penguinwave-pipewire"
 version = "0.3.0"
 dependencies = [
+ "libc",
  "penguinwave-proto",
  "serde",
  "serde_json",

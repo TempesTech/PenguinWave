@@ -8,11 +8,12 @@ use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, Mutex};
 
 use penguinwave_proto::{
-    ErrorKind, LinkInfo, OutputDevice, PortInfo, PortRef, PwError, RouteInfo, SinkConfig, SinkInfo,
-    StreamInfo, StreamRef,
+    ErrorKind, LinkInfo, OutputDevice, PortDirection, PortInfo, PortRef, PwError, RouteInfo,
+    SinkConfig, SinkInfo, StreamInfo, StreamRef,
 };
 
 use crate::backend::{PipeWireBackend, Result, ServerInfo};
+use crate::chain::ChainProcess;
 use crate::parse;
 use crate::watch::{EventSink, WatchHandle};
 
@@ -32,6 +33,8 @@ struct State {
     default_sink: String,
     /// Set to make every call fail, for testing recovery paths.
     unavailable: bool,
+    /// Exit codes handed to successive spawned chains; `None` keeps running.
+    chain_exits: Vec<Option<i32>>,
 }
 
 #[derive(Clone)]
@@ -82,6 +85,7 @@ impl MockBackend {
                 ports: parse::parse_ports_from_dump(DUMP).unwrap_or_default(),
                 default_sink: DEFAULT_SINK.trim().to_string(),
                 unavailable: false,
+                chain_exits: Vec::new(),
             })),
             calls: Arc::new(Mutex::new(Vec::new())),
         }
@@ -104,6 +108,21 @@ impl MockBackend {
     /// Make every call fail with `PipeWireUnavailable`.
     pub fn set_unavailable(&self, value: bool) {
         self.state.lock().unwrap().unavailable = value;
+    }
+
+    /// Exit codes for successive `spawn_filter_chain` calls; `None` runs forever.
+    pub fn queue_chain_exits(&self, exits: Vec<Option<i32>>) {
+        self.state.lock().unwrap().chain_exits = exits;
+    }
+
+    /// Make `resolve_node_id` answer for a node that is not in the fixtures.
+    pub fn add_node(&self, name: &str, id: u32) {
+        self.state.lock().unwrap().ports.push(PortInfo {
+            id,
+            node_name: name.to_string(),
+            port_name: "input_FL".into(),
+            direction: PortDirection::Input,
+        });
     }
 
     pub fn calls(&self) -> Vec<String> {
@@ -369,6 +388,19 @@ impl PipeWireBackend for MockBackend {
         self.record(format!("set_node_props {node_id} ({} props)", props.len()))
     }
 
+    fn spawn_filter_chain(&self, _conf_path: &std::path::Path) -> Result<Box<dyn ChainProcess>> {
+        self.record("spawn_filter_chain")?;
+        let exit = {
+            let mut state = self.state.lock().unwrap();
+            if state.chain_exits.is_empty() {
+                None
+            } else {
+                state.chain_exits.remove(0)
+            }
+        };
+        Ok(Box::new(MockChain { exit }))
+    }
+
     fn probe(&self) -> Result<ServerInfo> {
         self.record("probe")?;
         let state = self.state.lock().unwrap();
@@ -381,5 +413,20 @@ impl PipeWireBackend for MockBackend {
     fn watch(&self, _sink: EventSink) -> Result<WatchHandle> {
         self.record("watch")?;
         Ok(WatchHandle::new(Arc::new(AtomicBool::new(false))))
+    }
+}
+
+/// A chain that either runs forever or is already dead, per `queue_chain_exit`.
+struct MockChain {
+    exit: Option<i32>,
+}
+
+impl ChainProcess for MockChain {
+    fn try_wait(&mut self) -> Result<Option<i32>> {
+        Ok(self.exit)
+    }
+
+    fn kill(&mut self) {
+        self.exit = Some(0);
     }
 }

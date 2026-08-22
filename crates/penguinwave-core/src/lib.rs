@@ -6,5 +6,13 @@
 //! is testable against mocks with no audio server and no socket.
 //!
 //! Contains no transport: it does not know that sockets exist.
-//!
-//! Filled in at P3. See `claudedocs/workflow_daemon_split.md`.
+
+pub mod config;
+pub mod eq;
+pub mod error;
+pub mod events;
+
+pub use config::ConfigStore;
+pub use eq::EqManager;
+pub use error::{CoreError, Result};
+pub use events::EventBus;

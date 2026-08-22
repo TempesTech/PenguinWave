@@ -11,6 +11,7 @@ use penguinwave_proto::{
 };
 
 use crate::backend::{PipeWireBackend, Result, ServerInfo};
+use crate::chain::ChainProcess;
 use crate::cmd::{run, run_ok};
 use crate::icons;
 use crate::parse;
@@ -305,6 +306,10 @@ impl PipeWireBackend for PactlBackend {
                 &format!("{{ params = [ {params} ] }}"),
             ],
         )
+    }
+
+    fn spawn_filter_chain(&self, conf_path: &std::path::Path) -> Result<Box<dyn ChainProcess>> {
+        crate::chain::spawn(conf_path)
     }
 
     fn probe(&self) -> Result<ServerInfo> {
