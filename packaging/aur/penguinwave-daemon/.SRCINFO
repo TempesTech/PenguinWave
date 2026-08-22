@@ -1,0 +1,20 @@
+pkgbase = penguinwave-daemon
+	pkgdesc = Penguin Wave audio daemon and CLI: PipeWire sink management and headset ChatMix, no desktop required
+	pkgver = 0.3.0
+	pkgrel = 1
+	url = https://github.com/TempesTech/PenguinWave
+	install = penguinwave-daemon.install
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = rust
+	makedepends = cargo
+	depends = pipewire
+	depends = pipewire-pulse
+	depends = wireplumber
+	depends = hidapi
+	optdepends = penguinwave: desktop interface
+	optdepends = polkit: install the udev rule from a client without editing it by hand
+	source = penguinwave-daemon-0.3.0.tar.gz::https://github.com/TempesTech/PenguinWave/archive/refs/tags/v0.3.0.tar.gz
+	sha256sums = SKIP
+
+pkgname = penguinwave-daemon

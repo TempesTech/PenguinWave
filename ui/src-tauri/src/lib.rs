@@ -4,6 +4,7 @@
 //! over its socket; this layer owns the window, the tray, and the connection.
 
 mod daemon;
+mod service;
 
 use daemon::{DaemonClient, EventRelay, CONNECTION_EVENT, DAEMON_EVENT};
 use penguinwave_proto::{EventFrame, Request, Response};
@@ -28,6 +29,19 @@ async fn daemon_request(
         .map_err(|e| {
             penguinwave_proto::PwError::new(penguinwave_proto::ErrorKind::Internal, e.to_string())
         })?
+}
+
+/// Whether the daemon's user unit is enabled, so the UI can offer to start it
+/// rather than only reporting that nothing is listening.
+#[tauri::command]
+fn daemon_service_state() -> service::UnitState {
+    service::state()
+}
+
+/// Enable and start the user unit, on an explicit request from the UI.
+#[tauri::command]
+fn enable_daemon_service() -> Result<(), String> {
+    service::enable()
 }
 
 /// Whether the socket is up, for the disconnected banner.
@@ -180,7 +194,12 @@ pub fn run() {
                 }
             }
         })
-        .invoke_handler(tauri::generate_handler![daemon_request, daemon_connected])
+        .invoke_handler(tauri::generate_handler![
+            daemon_request,
+            daemon_connected,
+            daemon_service_state,
+            enable_daemon_service
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

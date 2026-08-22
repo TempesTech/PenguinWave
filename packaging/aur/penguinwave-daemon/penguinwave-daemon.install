@@ -1,0 +1,29 @@
+# The unit is per-user and this script runs as root, so it cannot be enabled
+# here. Telling the user beats enabling the wrong account's copy.
+_enable_hint() {
+    cat <<'MSG'
+
+Penguin Wave runs as a user service. Enable it for your own account:
+
+    systemctl --user enable --now penguinwave.service
+
+The desktop app offers to do this for you on first launch.
+
+MSG
+}
+
+post_install() {
+    _enable_hint
+}
+
+post_upgrade() {
+    if ! systemctl --user --quiet is-enabled penguinwave.service 2>/dev/null; then
+        _enable_hint
+    fi
+    # Picks up a changed unit file without waiting for the next login.
+    systemctl --user daemon-reload 2>/dev/null || true
+}
+
+pre_remove() {
+    systemctl --user disable --now penguinwave.service 2>/dev/null || true
+}

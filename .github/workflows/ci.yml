@@ -36,6 +36,10 @@ jobs:
       - name: Bindings freshness
         run: ./scripts/check-bindings.sh
 
+      # Packaging faults surface at install time, on a user's machine.
+      - name: Packaging
+        run: ./scripts/check-packaging.sh
+
   ui:
     runs-on: ubuntu-latest
     steps:

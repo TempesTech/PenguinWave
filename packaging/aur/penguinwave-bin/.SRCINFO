@@ -1,0 +1,21 @@
+pkgbase = penguinwave-bin
+	pkgdesc = PipeWire virtual-sink manager and headset ChatMix control for Linux (prebuilt binary)
+	pkgver = 0.3.0
+	pkgrel = 1
+	url = https://github.com/TempesTech/PenguinWave
+	arch = x86_64
+	license = Apache-2.0
+	depends = penguinwave-daemon
+	depends = webkit2gtk-4.1
+	depends = gtk3
+	depends = libayatana-appindicator
+	optdepends = waybar: system-tray host for wlroots/niri compositors
+	optdepends = polkit: privileged udev-rule install from the in-app Maintenance page
+	provides = penguinwave
+	conflicts = penguinwave
+	source = penguinwave-bin-0.3.0.deb::https://github.com/TempesTech/PenguinWave/releases/download/v0.3.0/PenguinWave_0.3.0_amd64.deb
+	source = LICENSE-0.3.0::https://github.com/TempesTech/PenguinWave/raw/v0.3.0/LICENSE
+	sha256sums = SKIP
+	sha256sums = SKIP
+
+pkgname = penguinwave-bin

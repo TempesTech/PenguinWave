@@ -2,3 +2,9 @@
 node_modules/
 ui/dist/
 ui/src-tauri/gen/schemas/
+
+# AUR build artifacts
+packaging/aur/*/pkg/
+packaging/aur/*/src/
+packaging/aur/*/*.pkg.tar.zst
+packaging/aur/*/*.deb

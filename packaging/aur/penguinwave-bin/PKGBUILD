@@ -1,6 +1,6 @@
 # Maintainer: Raul Ricea <raultynyo2001@gmail.com>
 pkgname=penguinwave-bin
-pkgver=0.2.0
+pkgver=0.3.0
 pkgrel=1
 pkgdesc="PipeWire virtual-sink manager and headset ChatMix control for Linux (prebuilt binary)"
 arch=('x86_64')
@@ -8,11 +8,10 @@ url="https://github.com/TempesTech/PenguinWave"
 license=('Apache-2.0')
 provides=('penguinwave')
 conflicts=('penguinwave')
+# Mirrors the source package's split: the daemon does the audio work and is a
+# separate package, so this one depends on it rather than bundling it.
 depends=(
-  'pipewire'
-  'pipewire-pulse'
-  'wireplumber'
-  'hidapi'
+  'penguinwave-daemon'
   'webkit2gtk-4.1'
   'gtk3'
   'libayatana-appindicator'
@@ -26,20 +25,18 @@ optdepends=(
 # $srcdir, leaving data.tar.gz which carries /usr/bin, .desktop and icons.
 source=(
   "$pkgname-$pkgver.deb::$url/releases/download/v$pkgver/PenguinWave_${pkgver}_amd64.deb"
-  "99-penguinwave-$pkgver.rules::$url/raw/v$pkgver/PenguinWave/packaging/99-penguinwave.rules"
   "LICENSE-$pkgver::$url/raw/v$pkgver/LICENSE"
 )
-sha256sums=('04f82f9bae70e873577a96740a1112ae0125694c927af821a08c289951c688c6'
-            'e5a24a02dddd7522e5fe59f8331337df8807599c4dffd415a5f34aa715748c63'
-            'c312aa6b1c2c79fff271da06a8a5f4258ba7f6a7b7bd2d53b2a342de2553f6cb')
+sha256sums=('SKIP'
+            'SKIP')
 
 package() {
-  # binary + PenguinWave.desktop + hicolor icons (32/128/256@2) from the .deb
+  # binary + PenguinWave.desktop + hicolor icons from the .deb
   bsdtar -xf "$srcdir/data.tar.gz" -C "$pkgdir"
 
-  # udev HID rule is not part of the .deb
-  install -Dm644 "$srcdir/99-penguinwave-$pkgver.rules" \
-    "$pkgdir/usr/lib/udev/rules.d/99-penguinwave.rules"
+  # The udev rule ships with penguinwave-daemon now: it grants HID access, and
+  # HID belongs to the daemon. Installing it from both would be a file
+  # conflict.
 
   install -Dm644 "$srcdir/LICENSE-$pkgver" \
     "$pkgdir/usr/share/licenses/penguinwave/LICENSE"

@@ -76,6 +76,20 @@ export async function isConnected(): Promise<boolean> {
   return invoke<boolean>('daemon_connected');
 }
 
+/// Whether the daemon's user unit is enabled.
+///
+/// `unavailable` means there is nothing to offer: no systemd session, or the
+/// daemon package is not installed.
+export type UnitState = 'enabled' | 'disabled' | 'unavailable';
+
+export async function serviceState(): Promise<UnitState> {
+  return invoke<UnitState>('daemon_service_state');
+}
+
+export async function enableService(): Promise<void> {
+  return invoke<void>('enable_daemon_service');
+}
+
 export type DaemonEventName = DaemonEvent['event'];
 
 /// Subscribe to one daemon event by its protocol name.
