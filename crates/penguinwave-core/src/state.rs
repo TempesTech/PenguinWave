@@ -4,6 +4,7 @@ use crate::chatmix::ChatMixController;
 use crate::config::ConfigStore;
 use crate::error::Result;
 use crate::events::EventBus;
+use crate::routes::{self, Routes};
 use crate::sinks;
 use crate::EqManager;
 use penguinwave_hid::{DeviceChange, DeviceRegistry, HidBackend};
@@ -34,6 +35,8 @@ pub struct CoreState {
     /// lifetime rather than discarded at the end of `start`.
     watch: Mutex<Option<WatchHandle>>,
     device_poll_running: AtomicBool,
+    /// Desired output routing, persisted so it survives a restart.
+    routes: Mutex<Routes>,
 }
 
 impl CoreState {
@@ -46,6 +49,7 @@ impl CoreState {
         let devices = Arc::new(RwLock::new(DeviceRegistry::new(hid.clone())));
         let eq = EqManager::new(backend.clone(), config.clone(), events.clone());
         let chatmix = ChatMixController::new(backend.clone(), devices.clone(), events.clone());
+        let routes = Mutex::new(config.load_routes());
 
         Arc::new(Self {
             backend,
@@ -57,6 +61,7 @@ impl CoreState {
             events,
             watch: Mutex::new(None),
             device_poll_running: AtomicBool::new(false),
+            routes,
         })
     }
 
@@ -78,6 +83,9 @@ impl CoreState {
         }
 
         self.eq.init();
+        if let Err(e) = self.reconcile_routes() {
+            eprintln!("[core] route reconcile failed: {e}");
+        }
         self.chatmix.start();
         self.start_device_poll();
         self.start_graph_watch();
@@ -104,8 +112,43 @@ impl CoreState {
         }
     }
 
+    /// Remember where a sink should point, and put it there.
+    pub fn set_route(&self, sink: &str, device: &str) -> Result<()> {
+        let routes = {
+            let mut routes = self.routes.lock().unwrap();
+            routes.set(sink, device);
+            routes.clone()
+        };
+        self.config.save_routes(&routes)?;
+        Ok(())
+    }
+
+    pub fn routes(&self) -> Routes {
+        self.routes.lock().unwrap().clone()
+    }
+
+    /// Re-link sinks whose device came back.
+    pub fn reconcile_routes(&self) -> Result<Vec<String>> {
+        let routes = self.routes();
+        if routes.0.is_empty() {
+            return Ok(Vec::new());
+        }
+        routes::reconcile(&*self.backend, &routes, self.eq.is_active())
+    }
+
     /// One graph change fans out to the three lists that can have moved.
     fn publish_graph(&self) {
+        // A node reappearing is the common case for a graph change, and it
+        // arrives with no links, so routing is restored before the lists go
+        // out and clients render them.
+        match self.reconcile_routes() {
+            Ok(restored) if !restored.is_empty() => {
+                eprintln!("[core] restored routing for {}", restored.join(", "));
+            }
+            Err(e) => eprintln!("[core] route reconcile failed: {e}"),
+            _ => {}
+        }
+
         self.events.publish(Event::GraphChanged);
         if let Ok(streams) = self.backend.list_application_streams() {
             self.events.publish(Event::StreamListChanged { streams });

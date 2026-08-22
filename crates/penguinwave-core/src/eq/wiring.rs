@@ -71,6 +71,15 @@ pub fn fallback_output_device(backend: &dyn PipeWireBackend) -> Option<String> {
         .find(|n| n.starts_with("alsa_output") || n.starts_with("bluez_output"))
 }
 
+/// Device a sink feeds directly, ignoring anything Penguin Wave manages.
+pub fn direct_target(backend: &dyn PipeWireBackend, sink: &str) -> Result<Option<String>> {
+    let monitor = port(sink, "monitor_FL".into());
+    Ok(targets_of(backend, &monitor)?
+        .into_iter()
+        .map(|t| t.node_name)
+        .find(|node| !is_managed_node(node)))
+}
+
 /// Device the chain currently feeds, whether through the EQ or directly.
 pub fn current_device_target(
     backend: &dyn PipeWireBackend,

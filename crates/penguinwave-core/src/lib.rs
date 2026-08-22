@@ -13,6 +13,7 @@ pub mod config;
 pub mod eq;
 pub mod error;
 pub mod events;
+pub mod routes;
 pub mod sinks;
 pub mod state;
 pub mod system;

@@ -94,7 +94,9 @@ pub enum StreamCmd {
 
 #[derive(Subcommand, Debug)]
 pub enum SinkCmd {
+    /// Every sink, hardware included.
     List,
+    /// Only the sinks Penguin Wave manages.
     ListCustom,
     Create {
         name: String,

@@ -140,6 +140,42 @@ impl MockBackend {
         self.watcher.lock().unwrap().is_some()
     }
 
+    /// Simulate a device powering off: the node goes, and so do its links.
+    pub fn remove_sink(&self, name: &str) {
+        let mut state = self.state.lock().unwrap();
+        state.sinks.retain(|s| s.name != name);
+        state.ports.retain(|p| p.node_name != name);
+    }
+
+    pub fn drop_links_to(&self, node: &str) {
+        let mut state = self.state.lock().unwrap();
+        state
+            .links
+            .retain(|l| l.target.node_name != node && l.source.node_name != node);
+    }
+
+    /// Simulate a device powering on: a fresh node carrying no links.
+    pub fn add_sink(&self, name: &str) {
+        let mut state = self.state.lock().unwrap();
+        let id = state.sinks.iter().map(|s| s.id).max().unwrap_or(0) + 1;
+        state.sinks.push(SinkInfo {
+            id,
+            name: name.to_string(),
+            description: name.to_string(),
+            volume: 100,
+            is_muted: false,
+            managed: false,
+        });
+        for (i, port) in ["playback_FL", "playback_FR"].iter().enumerate() {
+            state.ports.push(PortInfo {
+                id: id * 100 + i as u32,
+                node_name: name.to_string(),
+                port_name: (*port).to_string(),
+                direction: PortDirection::Input,
+            });
+        }
+    }
+
     pub fn calls(&self) -> Vec<String> {
         self.calls.lock().unwrap().clone()
     }

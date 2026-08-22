@@ -184,7 +184,7 @@ fn request(command: &Command) -> Result<Request, PwError> {
         },
 
         Command::Sink(cmd) => match cmd {
-            SinkCmd::List => Request::SinkListCustom,
+            SinkCmd::List => Request::SinkList,
             SinkCmd::ListCustom => Request::SinkListCustom,
             SinkCmd::Create { name, display_name } => Request::SinkCreate {
                 config: SinkConfig {

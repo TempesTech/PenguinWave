@@ -1,6 +1,7 @@
 //! On-disk state under `$XDG_CONFIG_HOME/penguinwave`.
 
 use crate::error::{io_err, CoreError, Result};
+use crate::routes::Routes;
 use penguinwave_proto::{EqPreset, EqState, UserDevice};
 use serde::{de::DeserializeOwned, Serialize};
 use std::fs;
@@ -60,6 +61,19 @@ impl ConfigStore {
 
     pub fn devices_path(&self) -> PathBuf {
         self.root.join("devices.toml")
+    }
+
+    pub fn routes_path(&self) -> PathBuf {
+        self.root.join("routes.json")
+    }
+
+    /// Desired output routing, so a device that comes back is re-linked.
+    pub fn load_routes(&self) -> Routes {
+        read_json(&self.routes_path()).unwrap_or_default()
+    }
+
+    pub fn save_routes(&self, routes: &Routes) -> Result<()> {
+        write_json_atomic(&self.routes_path(), routes)
     }
 
     /// Load EQ state, taking safe mode from the marker rather than the file.

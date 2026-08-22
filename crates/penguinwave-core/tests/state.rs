@@ -1,10 +1,10 @@
 mod common;
 use common::TempDir;
 
-use penguinwave_core::{sinks, ConfigStore, CoreState};
+use penguinwave_core::{dispatch, sinks, ConfigStore, CoreState};
 use penguinwave_hid::MockBackend as MockHid;
 use penguinwave_pipewire::{MockBackend, PipeWireBackend};
-use penguinwave_proto::{DeviceId, SinkConfig};
+use penguinwave_proto::{DeviceId, Request, SinkConfig};
 use std::sync::Arc;
 
 const NOVA7: DeviceId = DeviceId {
@@ -266,4 +266,130 @@ fn a_headset_plugged_in_after_start_is_noticed() {
     h.state.refresh_devices().unwrap();
 
     assert_eq!(h.state.snapshot().unwrap().selected_device, Some(NOVA7));
+}
+
+const HEADSET_SINK: &str = "alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo";
+
+/// Built on an empty graph rather than the captured fixture: that one has the
+/// EQ output fanned out to two devices, so losing one leaves the route
+/// legitimately intact and there is nothing to restore.
+#[test]
+fn a_route_survives_the_device_disappearing_and_coming_back() {
+    let dir = TempDir::new("reroute");
+    let audio = Arc::new(MockBackend::empty());
+    audio.add_sink(HEADSET_SINK);
+    // Without these the EQ start waits out its node timeout on every run.
+    audio.add_node("penguinwave_eq_game", 9001);
+    audio.add_node("penguinwave_eq_chat", 9002);
+    let state = CoreState::new(
+        audio.clone(),
+        Arc::new(MockHid::new()),
+        ConfigStore::new(&dir.0),
+    );
+    state.start().unwrap();
+
+    // The user picks an output while the headset is on.
+    dispatch(
+        &state,
+        Request::SinkRouteToDevice {
+            sink: "game_sink".into(),
+            device: HEADSET_SINK.into(),
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        state.routes().get("game_sink").map(String::as_str),
+        Some(HEADSET_SINK)
+    );
+    assert!(
+        state.reconcile_routes().unwrap().is_empty(),
+        "already linked"
+    );
+
+    // Powered off: the node goes, and every link to it with it.
+    audio.remove_sink(HEADSET_SINK);
+    audio.drop_links_to(HEADSET_SINK);
+    assert!(
+        state.reconcile_routes().unwrap().is_empty(),
+        "nothing to route to yet"
+    );
+
+    // Powered back on: a fresh node carrying no links.
+    audio.add_sink(HEADSET_SINK);
+    assert_eq!(
+        state.reconcile_routes().unwrap(),
+        vec!["game_sink".to_string()]
+    );
+    assert!(
+        state.reconcile_routes().unwrap().is_empty(),
+        "restored once"
+    );
+}
+
+#[test]
+fn reconcile_leaves_a_sink_that_already_points_somewhere() {
+    let h = harness("noreroute");
+    h.state.start().unwrap();
+    dispatch(
+        &h.state,
+        Request::SinkRouteToDevice {
+            sink: "game_sink".into(),
+            device: HEADSET_SINK.into(),
+        },
+    )
+    .unwrap();
+
+    // Still linked, so there is nothing to restore and nothing to fight over.
+    assert!(h.state.reconcile_routes().unwrap().is_empty());
+}
+
+#[test]
+fn a_route_to_an_absent_device_is_kept_but_not_applied() {
+    let dir = TempDir::new("absentroute");
+    let audio = Arc::new(MockBackend::empty());
+    audio.add_sink(HEADSET_SINK);
+    // Without these the EQ start waits out its node timeout on every run.
+    audio.add_node("penguinwave_eq_game", 9001);
+    audio.add_node("penguinwave_eq_chat", 9002);
+    let state = CoreState::new(
+        audio.clone(),
+        Arc::new(MockHid::new()),
+        ConfigStore::new(&dir.0),
+    );
+    state.start().unwrap();
+    dispatch(
+        &state,
+        Request::SinkRouteToDevice {
+            sink: "game_sink".into(),
+            device: HEADSET_SINK.into(),
+        },
+    )
+    .unwrap();
+
+    audio.remove_sink(HEADSET_SINK);
+    audio.drop_links_to(HEADSET_SINK);
+
+    // The user's choice outlives the hardware; it is simply not actionable.
+    assert!(state.reconcile_routes().unwrap().is_empty());
+    assert_eq!(
+        state.routes().get("game_sink").map(String::as_str),
+        Some(HEADSET_SINK)
+    );
+}
+
+#[test]
+fn routes_are_reloaded_after_a_restart() {
+    let dir = TempDir::new("routepersist");
+    let audio = Arc::new(MockBackend::new());
+    let hid = Arc::new(MockHid::new());
+
+    let first = CoreState::new(audio.clone(), hid.clone(), ConfigStore::new(&dir.0));
+    first.set_route("game_sink", HEADSET_SINK).unwrap();
+
+    // Managed sinks outlive the daemon, so the routing for them must too.
+    let second = CoreState::new(audio, hid, ConfigStore::new(&dir.0));
+    assert_eq!(
+        second.routes().get("game_sink").map(String::as_str),
+        Some(HEADSET_SINK)
+    );
 }

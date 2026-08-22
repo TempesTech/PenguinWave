@@ -250,6 +250,8 @@ impl CoreState {
     /// the managed sinks moves.
     fn route_sink(&self, sink: &str, device: &str) -> Result<()> {
         self.backend.route_sink_to_device(sink, device)?;
+        // Recorded so the link can be restored when the device comes back.
+        self.set_route(sink, device)?;
         if let Some(chain) = crate::eq::nodes::chain_for_sink(sink) {
             if self.eq.is_active() {
                 self.eq.route_output(chain, device)?;
