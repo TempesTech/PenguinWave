@@ -35,3 +35,27 @@ jobs:
       # hand. This fails the build if the committed output has drifted.
       - name: Bindings freshness
         run: ./scripts/check-bindings.sh
+
+  ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+
+      - name: Install
+        run: npm ci
+        working-directory: ui
+
+      # The UI imports the generated bindings directly, so a protocol change
+      # that the frontend has not followed fails here rather than at runtime.
+      - name: Typecheck
+        run: npx tsc --noEmit
+        working-directory: ui
+
+      - name: Build
+        run: npx vite build
+        working-directory: ui

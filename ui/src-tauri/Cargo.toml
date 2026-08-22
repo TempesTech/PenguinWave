@@ -1,0 +1,36 @@
+[package]
+name = "penguinwave"
+version.workspace = true
+description = "Penguin Wave: PipeWire virtual sink manager and headset ChatMix control."
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[lib]
+name = "penguinwave_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+penguinwave-proto = { workspace = true }
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tauri-plugin-shell = "2"
+tauri-plugin-single-instance = "2.3.4"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-autostart = "2"
+
+[package.metadata.bundle]
+identifier = "com.penguinwave.app"
+icon = ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png"]
+resources = ["resources"]
+copyright = "© Penguinwave"
+category = "Audio"
+short_description = "PipeWire Virtual Sink Manager"
+deb = { depends = ["pipewire", "penguinwave-daemon"], desktop = "" }

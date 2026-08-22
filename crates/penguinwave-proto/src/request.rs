@@ -56,6 +56,11 @@ pub enum Request {
     #[serde(rename = "sink.delete")]
     #[ts(rename = "sink.delete")]
     SinkDelete { name: String },
+    /// Every sink, hardware included.
+    #[serde(rename = "sink.list")]
+    #[ts(rename = "sink.list")]
+    SinkList,
+    /// Only the sinks Penguin Wave manages.
     #[serde(rename = "sink.list_custom")]
     #[ts(rename = "sink.list_custom")]
     SinkListCustom,

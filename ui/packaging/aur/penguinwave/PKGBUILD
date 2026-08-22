@@ -1,0 +1,60 @@
+pkgname=penguinwave
+pkgver=0.2.0
+pkgrel=1
+pkgdesc="PipeWire virtual-sink manager and headset ChatMix control for Linux"
+arch=('x86_64')
+url="https://github.com/TempesTech/PenguinWave"
+license=('Apache-2.0')
+depends=(
+  'pipewire'
+  'pipewire-pulse'
+  'wireplumber'
+  'hidapi'
+  'webkit2gtk-4.1'
+  'gtk3'
+  'libayatana-appindicator'
+)
+makedepends=(
+  'rust'
+  'cargo'
+  'nodejs'
+  'npm'
+  'pkgconf'
+)
+optdepends=(
+  'waybar: system-tray host for wlroots/niri compositors'
+  'polkit: privileged udev-rule install from the in-app Maintenance page'
+)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cd "$srcdir/PenguinWave-$pkgver/PenguinWave"
+  npm ci
+  npm run tauri:build -- --no-bundle
+}
+
+package() {
+  local app="$srcdir/PenguinWave-$pkgver/PenguinWave"
+
+  install -Dm755 "$app/src-tauri/target/release/penguinwave" \
+    "$pkgdir/usr/bin/penguinwave"
+
+  install -Dm644 "$app/packaging/com.penguinwave.app.desktop" \
+    "$pkgdir/usr/share/applications/com.penguinwave.app.desktop"
+
+  install -Dm644 "$app/packaging/99-penguinwave.rules" \
+    "$pkgdir/usr/lib/udev/rules.d/99-penguinwave.rules"
+
+  # hicolor icon theme
+  local size
+  for size in 16 24 32 48 64 128 256 512; do
+    install -Dm644 "$app/packaging/icons/penguinwave-$size.png" \
+      "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps/penguinwave.png"
+  done
+  install -Dm644 "$app/packaging/icons/penguinwave.svg" \
+    "$pkgdir/usr/share/icons/hicolor/scalable/apps/penguinwave.svg"
+
+  install -Dm644 "$srcdir/PenguinWave-$pkgver/LICENSE" \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

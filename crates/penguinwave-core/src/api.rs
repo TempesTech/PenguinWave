@@ -62,6 +62,8 @@ pub fn dispatch(state: &CoreState, request: Request) -> Result<Response> {
             state.publish_sinks()
         }
 
+        Request::SinkList => Ok(Response::Sinks(state.backend.list_sinks()?)),
+
         Request::SinkListCustom => {
             let sinks: Vec<_> = state
                 .backend

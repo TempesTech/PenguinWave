@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=PenguinWave
+GenericName=Audio Routing
+Comment=PipeWire virtual-sink manager and headset ChatMix control
+Exec=penguinwave
+Icon=penguinwave
+Terminal=false
+Categories=AudioVideo;Audio;Mixer;Settings;
+Keywords=audio;pipewire;sink;chatmix;headset;routing;steelseries;
+StartupWMClass=PenguinWave
+StartupNotify=true

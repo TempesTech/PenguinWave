@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(221, 83%, 53%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+}
+
+.dark {
+  /* Dark blue brand: surface tiers a0/a10/a20 + cyan accent */
+  --background: hsl(244, 36%, 10%);          /* #131026 */
+  --foreground: hsl(194, 67%, 89%);          /* #d1edf8 */
+  --muted: hsl(245, 13%, 31%);               /* #403d50 */
+  --muted-foreground: hsl(239, 9%, 59%);     /* #8c8a97 */
+  --popover: hsl(245, 26%, 17%);             /* #28263b */
+  --popover-foreground: hsl(194, 67%, 89%);
+  --card: hsl(245, 26%, 17%);                /* #28263b */
+  --card-foreground: hsl(194, 67%, 89%);
+  --border: hsl(245, 13%, 31%);              /* #403d50 */
+  --input: hsl(244, 18%, 25%);               /* #34364b */
+  --primary: hsl(194, 67%, 76%);             /* #92d7f0 */
+  --primary-foreground: hsl(244, 36%, 10%);
+  --secondary: hsl(245, 13%, 31%);
+  --secondary-foreground: hsl(194, 67%, 89%);
+  --accent: hsl(244, 18%, 25%);
+  --accent-foreground: hsl(194, 67%, 89%);
+  --destructive: hsl(0, 62.8%, 50%);
+  --destructive-foreground: hsl(194, 67%, 89%);
+  --ring: hsl(194, 67%, 76%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  /* Numeric / monospace data */
+  .font-mono, code, pre, kbd {
+    font-family: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+}
+
+@layer components {
+  .dragging {
+    @apply opacity-60 transition-all duration-200;
+  }
+
+  .drop-zone-active {
+    @apply border-primary border-dashed;
+    background-color: hsl(from var(--primary) h s l / 0.08);
+  }
+}

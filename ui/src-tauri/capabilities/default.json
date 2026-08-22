@@ -1,0 +1,32 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "shell:allow-open",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "exec-pactl",
+          "cmd": "pactl",
+          "args": [
+            "load-module",
+            "module-null-sink",
+            {
+              "validator": "sink_name=\\S+"
+            },
+            {
+              "validator": "sink_properties=\\S+"
+            }
+          ],
+          "sidecar": false
+        }
+      ]
+    }
+  ]
+}
