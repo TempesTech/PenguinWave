@@ -232,10 +232,14 @@ fn chatmix_manual_can_be_set_and_released() {
     assert!(!released.manual);
 }
 
+/// With the EQ inserted, routing re-wires the whole chain rather than calling
+/// `route_sink_to_device`, which drops every link from the sink's monitor --
+/// the one feeding the EQ included.
 #[test]
-fn routing_a_managed_sink_follows_through_to_the_eq() {
+fn routing_a_managed_sink_rewires_the_eq_rather_than_the_sink() {
     let h = harness("route");
     h.state.eq.init();
+    assert!(h.state.eq.is_active(), "test needs the EQ running");
     let before = h.audio.calls().len();
 
     call(
@@ -247,8 +251,11 @@ fn routing_a_managed_sink_follows_through_to_the_eq() {
     );
 
     let after = &h.audio.calls()[before..];
-    assert!(after.iter().any(|c| c.starts_with("route_sink_to_device")));
     assert!(after.iter().any(|c| c.starts_with("link_ports")));
+    assert!(
+        !after.iter().any(|c| c.starts_with("route_sink_to_device")),
+        "this would unlink the monitor from the EQ"
+    );
 }
 
 #[test]

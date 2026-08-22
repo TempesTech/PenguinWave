@@ -393,3 +393,40 @@ fn routes_are_reloaded_after_a_restart() {
         Some(HEADSET_SINK)
     );
 }
+
+/// Routing a managed sink used to tear down the link feeding the EQ, leaving
+/// the monitor wired straight to the device: audio kept playing, the chain
+/// received nothing, and every band edit was silent.
+#[test]
+fn routing_a_sink_keeps_the_eq_in_the_path() {
+    let h = harness("routekeepseq");
+    h.state.start().unwrap();
+    assert!(h.state.eq.is_active(), "test needs the EQ running");
+
+    dispatch(
+        &h.state,
+        Request::SinkRouteToDevice {
+            sink: "game_sink".into(),
+            device: HEADSET_SINK.into(),
+        },
+    )
+    .unwrap();
+
+    let monitor_targets: Vec<String> = h
+        .audio
+        .list_links()
+        .unwrap()
+        .iter()
+        .filter(|l| l.source.node_name == "game_sink" && l.source.port_name.starts_with("monitor"))
+        .map(|l| l.target.node_name.clone())
+        .collect();
+
+    assert!(
+        monitor_targets.iter().any(|n| n == "penguinwave_eq_game"),
+        "the EQ receives nothing: {monitor_targets:?}"
+    );
+    assert!(
+        !monitor_targets.iter().any(|n| n == HEADSET_SINK),
+        "the monitor feeds the device directly, bypassing the EQ: {monitor_targets:?}"
+    );
+}

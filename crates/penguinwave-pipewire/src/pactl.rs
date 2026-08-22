@@ -93,6 +93,14 @@ impl PipeWireBackend for PactlBackend {
 
         Ok(raw
             .into_iter()
+            // The EQ chain's own playback streams are sink-inputs like any
+            // other; listing them invites the user to move Penguin Wave's
+            // plumbing around inside Penguin Wave.
+            .filter(|s| {
+                !s.node_name
+                    .as_deref()
+                    .is_some_and(penguinwave_proto::is_own_node)
+            })
             .map(|s| {
                 let sink = sinks
                     .iter()

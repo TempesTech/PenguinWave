@@ -6,6 +6,17 @@ use ts_rs::TS;
 pub const GAME_SINK: &str = "game_sink";
 pub const CHAT_SINK: &str = "chat_sink";
 
+/// Every node the EQ filter chain registers.
+pub const EQ_NODE_PREFIX: &str = "penguinwave_eq";
+
+/// Whether a node belongs to Penguin Wave itself.
+///
+/// The EQ chain's playback streams are ordinary sink-inputs, so without this
+/// they are listed as if they were applications the user could move.
+pub fn is_own_node(node_name: &str) -> bool {
+    node_name == GAME_SINK || node_name == CHAT_SINK || node_name.starts_with(EQ_NODE_PREFIX)
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct SinkConfig {

@@ -144,6 +144,8 @@ pub fn parse_output_devices(input: &str) -> Vec<OutputDevice> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct RawStream {
     pub stream: StreamRef,
+    /// PipeWire `node.name`, which identifies our own streams.
+    pub node_name: Option<String>,
     pub sink_id: u32,
     pub volume: u8,
     pub is_muted: bool,
@@ -167,6 +169,7 @@ pub fn parse_sink_inputs(input: &str) -> Vec<RawStream> {
                     app_name: b.prop("application.name").unwrap_or_default().to_string(),
                     pid,
                 },
+                node_name: b.prop("node.name").map(str::to_string),
                 sink_id: b.field("Sink").and_then(|s| s.parse().ok()).unwrap_or(0),
                 volume: b.field("Volume").and_then(parse_volume_pct).unwrap_or(100),
                 is_muted: yes(b.field("Mute")),

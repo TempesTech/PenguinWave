@@ -248,15 +248,21 @@ impl CoreState {
 
     /// Point a sink at an output device, following it with the EQ when one of
     /// the managed sinks moves.
+    /// Point a sink at an output device.
+    ///
+    /// With the EQ inserted the whole chain is re-wired, not just the output.
+    /// `route_sink_to_device` drops every link from the sink's monitor, which
+    /// includes the one feeding the EQ, so using it here would leave audio
+    /// running dry into the device with the EQ permanently bypassed.
     fn route_sink(&self, sink: &str, device: &str) -> Result<()> {
-        self.backend.route_sink_to_device(sink, device)?;
+        match crate::eq::nodes::chain_for_sink(sink) {
+            Some(chain) if self.eq.is_active() => {
+                crate::eq::wiring::wire_through_eq(&*self.backend, chain, device)?;
+            }
+            _ => self.backend.route_sink_to_device(sink, device)?,
+        }
         // Recorded so the link can be restored when the device comes back.
         self.set_route(sink, device)?;
-        if let Some(chain) = crate::eq::nodes::chain_for_sink(sink) {
-            if self.eq.is_active() {
-                self.eq.route_output(chain, device)?;
-            }
-        }
         Ok(())
     }
 

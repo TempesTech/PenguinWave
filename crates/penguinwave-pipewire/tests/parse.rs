@@ -246,3 +246,58 @@ fn fields_and_properties_do_not_bleed() {
     assert!(!game.fields.contains_key("node.name"));
     assert!(!game.props.contains_key("Name"));
 }
+
+/// The EQ chain's playback streams are ordinary sink-inputs. Listing them
+/// showed "PenguinWave EQ (Game)" among the user's applications, unassigned
+/// and draggable, inviting them to move Penguin Wave's own plumbing.
+#[test]
+fn our_own_streams_are_identified_by_node_name() {
+    use penguinwave_proto::is_own_node;
+
+    let eq_stream = "\
+Sink Input #3601
+\tSink: 58
+\tMute: no
+\tVolume: front-left: 65536 / 100%
+\tProperties:
+\t\tnode.name = \"penguinwave_eq_game_out\"
+\t\tmedia.name = \"PenguinWave EQ (Game)\"
+
+Sink Input #15031
+\tSink: 58
+\tMute: no
+\tVolume: front-left: 65536 / 100%
+\tProperties:
+\t\tapplication.name = \"Brave\"
+\t\tnode.name = \"Brave\"
+";
+
+    let parsed = penguinwave_pipewire::parse::parse_sink_inputs(eq_stream);
+    assert_eq!(parsed.len(), 2, "both blocks must parse");
+
+    let own: Vec<&str> = parsed
+        .iter()
+        .filter(|s| s.node_name.as_deref().is_some_and(is_own_node))
+        .map(|s| s.node_name.as_deref().unwrap())
+        .collect();
+    assert_eq!(own, ["penguinwave_eq_game_out"]);
+}
+
+#[test]
+fn every_node_penguinwave_owns_is_recognised() {
+    use penguinwave_proto::{is_own_node, CHAT_SINK, GAME_SINK};
+
+    for node in [
+        GAME_SINK,
+        CHAT_SINK,
+        "penguinwave_eq_game",
+        "penguinwave_eq_game_out",
+        "penguinwave_eq_chat",
+        "penguinwave_eq_chat_out",
+    ] {
+        assert!(is_own_node(node), "{node}");
+    }
+    for node in ["Brave", "alsa_output.usb-x", "spotify", "cava"] {
+        assert!(!is_own_node(node), "{node}");
+    }
+}
