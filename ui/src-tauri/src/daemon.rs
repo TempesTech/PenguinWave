@@ -36,6 +36,10 @@ pub trait EventRelay: Send + Sync + 'static {
 }
 
 pub struct DaemonClient {
+    /// Resolved once at construction: the socket does not move under a
+    /// running client, and reading it from the environment on every reconnect
+    /// makes the client untestable.
+    path: Option<PathBuf>,
     writer: Mutex<Option<UnixStream>>,
     pending: Pending,
     next_id: AtomicU32,
@@ -44,7 +48,12 @@ pub struct DaemonClient {
 
 impl DaemonClient {
     pub fn new() -> Arc<Self> {
+        Self::with_path(socket_path())
+    }
+
+    pub fn with_path(path: Option<PathBuf>) -> Arc<Self> {
         Arc::new(Self {
+            path,
             writer: Mutex::new(None),
             pending: Arc::new(Mutex::new(HashMap::new())),
             next_id: AtomicU32::new(1),
@@ -76,26 +85,26 @@ impl DaemonClient {
 
     /// One connection's lifetime. Returns when it drops.
     fn connect_once(&self, relay: &dyn EventRelay) -> Result<(), PwError> {
-        let path = socket_path()
+        let path = self
+            .path
+            .as_ref()
             .ok_or_else(|| PwError::new(ErrorKind::Internal, "XDG_RUNTIME_DIR is not set"))?;
-        let stream = UnixStream::connect(&path)
+        let stream = UnixStream::connect(path)
             .map_err(|e| PwError::new(ErrorKind::PipeWireUnavailable, e.to_string()))?;
-        let reader = BufReader::new(
+        let mut reader = BufReader::new(
             stream
                 .try_clone()
                 .map_err(|e| PwError::new(ErrorKind::Internal, e.to_string()))?,
         );
         *self.writer.lock().unwrap() = Some(stream);
 
-        // Handshake and subscription happen before the UI is told it is
-        // connected, so a snapshot taken on that signal cannot race them.
-        self.call(Request::SessionHello {
-            client: format!("penguinwave-ui/{}", env!("CARGO_PKG_VERSION")),
-            proto: PROTO_VERSION,
-        })?;
-        self.call(Request::SessionSubscribe {
-            events: vec!["*".into()],
-        })?;
+        // The handshake reads its own replies. It cannot go through `call`,
+        // which waits on the read loop that has not started yet.
+        let result = self.handshake(&mut reader);
+        if let Err(e) = result {
+            *self.writer.lock().unwrap() = None;
+            return Err(e);
+        }
 
         self.connected.store(true, Ordering::SeqCst);
         relay.connection(true);
@@ -108,6 +117,63 @@ impl DaemonClient {
         // Waiting callers must fail rather than hang until the app closes.
         self.pending.lock().unwrap().clear();
         Ok(())
+    }
+
+    /// Negotiate the version and subscribe, before the UI is told it is
+    /// connected, so a snapshot taken on that signal cannot race them.
+    fn handshake(&self, reader: &mut BufReader<UnixStream>) -> Result<(), PwError> {
+        let hello = self.request_inline(
+            reader,
+            Request::SessionHello {
+                client: format!("penguinwave-ui/{}", env!("CARGO_PKG_VERSION")),
+                proto: PROTO_VERSION,
+            },
+        )?;
+        if let Response::Hello(hello) = hello {
+            if !version_supported(hello.proto.0) && !version_supported(hello.proto.1) {
+                return Err(PwError::version_mismatch(PROTO_SUPPORTED));
+            }
+        }
+        self.request_inline(
+            reader,
+            Request::SessionSubscribe {
+                events: vec!["*".into()],
+            },
+        )?;
+        Ok(())
+    }
+
+    /// Send and read the reply directly, for use before the read loop runs.
+    fn request_inline(
+        &self,
+        reader: &mut BufReader<UnixStream>,
+        request: Request,
+    ) -> Result<Response, PwError> {
+        let id = self.next_id.fetch_add(1, Ordering::SeqCst);
+        self.write(&RequestFrame::new(id, request))?;
+
+        let mut line = String::new();
+        loop {
+            line.clear();
+            match reader.read_line(&mut line) {
+                Ok(0) | Err(_) => {
+                    return Err(PwError::new(
+                        ErrorKind::PipeWireUnavailable,
+                        "the daemon closed the connection during the handshake",
+                    ))
+                }
+                Ok(_) => {}
+            }
+            if let Ok(frame) = serde_json::from_str::<ResponseFrame>(&line) {
+                if frame.id != id {
+                    continue;
+                }
+                return match frame.payload {
+                    ResponsePayload::Ok(r) => Ok(r),
+                    ResponsePayload::Err(e) => Err(e),
+                };
+            }
+        }
     }
 
     fn read_loop(&self, mut reader: BufReader<UnixStream>, relay: &dyn EventRelay) {
@@ -143,14 +209,7 @@ impl DaemonClient {
         }
 
         match rx.recv() {
-            Ok(ResponsePayload::Ok(r)) => {
-                if let Response::Hello(hello) = &r {
-                    if !version_supported(hello.proto.1) {
-                        return Err(PwError::version_mismatch(PROTO_SUPPORTED));
-                    }
-                }
-                Ok(r)
-            }
+            Ok(ResponsePayload::Ok(r)) => Ok(r),
             Ok(ResponsePayload::Err(e)) => Err(e),
             Err(_) => Err(PwError::new(
                 ErrorKind::PipeWireUnavailable,
