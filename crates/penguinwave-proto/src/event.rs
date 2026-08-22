@@ -51,6 +51,11 @@ pub enum Event {
     #[ts(rename = "device.detached")]
     DeviceDetached { device: DeviceId },
 
+    /// Another client picked a different headset, or cleared the selection.
+    #[serde(rename = "device.selection_changed")]
+    #[ts(rename = "device.selection_changed")]
+    DeviceSelectionChanged { device: Option<DeviceId> },
+
     /// Planned stop. Managed sinks and the EQ chain are left running.
     #[serde(rename = "daemon.shutting_down")]
     #[ts(rename = "daemon.shutting_down")]
@@ -69,6 +74,7 @@ impl Event {
             Event::SinkListChanged { .. } => "sink.list_changed",
             Event::DeviceAttached { .. } => "device.attached",
             Event::DeviceDetached { .. } => "device.detached",
+            Event::DeviceSelectionChanged { .. } => "device.selection_changed",
             Event::DaemonShuttingDown => "daemon.shutting_down",
         }
     }

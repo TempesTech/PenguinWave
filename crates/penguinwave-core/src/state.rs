@@ -80,7 +80,15 @@ impl CoreState {
 
     pub fn select_device(&self, id: DeviceId) -> Result<()> {
         self.devices.write().unwrap().select(id)?;
+        self.events
+            .publish(Event::DeviceSelectionChanged { device: Some(id) });
         Ok(())
+    }
+
+    pub fn clear_selection(&self) {
+        self.devices.write().unwrap().clear_selection();
+        self.events
+            .publish(Event::DeviceSelectionChanged { device: None });
     }
 
     /// Everything a client needs to render from cold.

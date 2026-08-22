@@ -38,9 +38,15 @@ for c in penguinwave-core penguinwave-hid penguinwave-daemon penguinwave-cli; do
 done
 
 # hidapi is confined to penguinwave-hid so the daemon package can be installed
-# and tested without it, and so core stays mockable.
+# and tested without it, and so core stays mockable. The invariant is the
+# dependency, not the spelling: penguinwave-hid re-exports a backend whose type
+# name contains "HidApi", and matching on that would fire on legitimate use.
 for c in penguinwave-proto penguinwave-core penguinwave-pipewire penguinwave-daemon penguinwave-cli; do
-    check "$c must not use hidapi directly" "crates/$c/src" '\bhidapi\b'
+    check "$c must not name the hidapi crate" "crates/$c/src" '(^|[^a-zA-Z_])hidapi::|use hidapi'
+    if [ -f "crates/$c/Cargo.toml" ] && grep -qE '^hidapi[[:space:]]*=' "crates/$c/Cargo.toml"; then
+        echo "error: $c must not depend on hidapi (use penguinwave-hid)"
+        fail=1
+    fi
 done
 
 # JSON numbers are IEEE-754 doubles in JavaScript, exact only to 2^53-1.

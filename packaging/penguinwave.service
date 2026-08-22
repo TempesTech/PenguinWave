@@ -1,0 +1,26 @@
+[Unit]
+Description=Penguin Wave audio daemon
+Documentation=https://github.com/TempesTech/PenguinWave
+PartOf=pipewire.service
+After=pipewire.service
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/penguinwave-daemon
+Restart=on-failure
+RestartSec=2
+
+# The daemon never needs privilege; install_udev returns a command for the
+# client to run instead of elevating here.
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX
+# The config directory is the only thing it writes.
+ReadWritePaths=%h/.config/penguinwave
+
+[Install]
+WantedBy=default.target

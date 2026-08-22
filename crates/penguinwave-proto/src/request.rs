@@ -120,6 +120,9 @@ pub enum Request {
     #[serde(rename = "eq.set_chain")]
     #[ts(rename = "eq.set_chain")]
     EqSetChain { chain: EqChainId, value: EqChain },
+    #[serde(rename = "eq.set_chain_enabled")]
+    #[ts(rename = "eq.set_chain_enabled")]
+    EqSetChainEnabled { chain: EqChainId, enabled: bool },
     #[serde(rename = "eq.set_band")]
     #[ts(rename = "eq.set_band")]
     EqSetBand {

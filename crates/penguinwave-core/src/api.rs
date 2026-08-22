@@ -124,7 +124,7 @@ pub fn dispatch(state: &CoreState, request: Request) -> Result<Response> {
         Request::DeviceSetSelected { device } => {
             match device {
                 Some(id) => state.select_device(id)?,
-                None => state.devices.write().unwrap().clear_selection(),
+                None => state.clear_selection(),
             }
             Ok(Response::SelectedDevice(
                 state.devices.read().unwrap().selected(),
@@ -168,6 +168,11 @@ pub fn dispatch(state: &CoreState, request: Request) -> Result<Response> {
 
         Request::EqSetChain { chain, value } => {
             state.eq.set_chain(chain, value)?;
+            Ok(Response::EqState(state.eq.state()))
+        }
+
+        Request::EqSetChainEnabled { chain, enabled } => {
+            state.eq.set_chain_enabled(chain, enabled)?;
             Ok(Response::EqState(state.eq.state()))
         }
 

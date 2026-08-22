@@ -321,3 +321,25 @@ fn check_deps_and_udev_answer_without_privilege() {
         assert!(cmd.last().unwrap().contains("udevadm"));
     }
 }
+
+#[test]
+fn selecting_a_device_publishes_a_selection_change() {
+    let h = harness("selectevent");
+    h.hid.add(NOVA7, vec![]);
+    h.state.refresh_devices().unwrap();
+    let rx = h.state.events.subscribe();
+
+    call(
+        &h,
+        Request::DeviceSetSelected {
+            device: Some(NOVA7),
+        },
+    );
+    call(&h, Request::DeviceSetSelected { device: None });
+
+    let names: Vec<&'static str> = rx.try_iter().map(|e| e.name()).collect();
+    assert_eq!(
+        names,
+        ["device.selection_changed", "device.selection_changed"]
+    );
+}

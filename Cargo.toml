@@ -29,3 +29,5 @@ ts-rs = "12"
 hidapi = "2.6"
 toml = "0.8"
 libc = "0.2"
+clap = { version = "4", features = ["derive"] }
+clap_complete = "4"
