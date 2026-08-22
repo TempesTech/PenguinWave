@@ -319,6 +319,19 @@ impl EqManager {
         Ok(())
     }
 
+    /// Replace a whole chain at once.
+    pub fn set_chain(&self, chain_id: EqChainId, value: EqChain) -> Result<()> {
+        self.ensure_active()?;
+        self.state
+            .lock()
+            .unwrap()
+            .chains
+            .insert(chain_id, value.clamped());
+        self.apply_chain(chain_id)?;
+        self.after_mutation();
+        Ok(())
+    }
+
     /// Hot path: one band changed, so only its node is pushed.
     pub fn set_band(&self, chain_id: EqChainId, index: usize, band: EqBand) -> Result<()> {
         self.ensure_active()?;

@@ -338,7 +338,7 @@ fn method_surface_is_complete() {
         Request::DeviceListUser,
         Request::DeviceAddUser { device: udev() },
         Request::DeviceRemoveUser { name: "n".into() },
-        Request::ChatmixSetManual { value: 50 },
+        Request::ChatmixSetManual { value: Some(50) },
         Request::EqGetState,
         Request::EqSetChain {
             chain: EqChainId::Game,

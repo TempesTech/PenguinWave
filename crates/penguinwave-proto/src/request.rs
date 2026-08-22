@@ -108,10 +108,10 @@ pub enum Request {
     DeviceRemoveUser { name: String },
 
     // ---- chatmix ----
-    /// Drive the split by hand instead of from the headset wheel.
+    /// Drive the split by hand; `None` hands control back to the wheel.
     #[serde(rename = "chatmix.set_manual")]
     #[ts(rename = "chatmix.set_manual")]
-    ChatmixSetManual { value: u8 },
+    ChatmixSetManual { value: Option<u8> },
 
     // ---- eq ----
     #[serde(rename = "eq.get_state")]

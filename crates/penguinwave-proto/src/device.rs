@@ -18,6 +18,15 @@ impl DeviceId {
             product_id,
         }
     }
+
+    /// Lower-case 4-digit hex, the form udev rules match on.
+    pub fn vendor_id_hex(&self) -> String {
+        format!("{:04x}", self.vendor_id)
+    }
+
+    pub fn product_id_hex(&self) -> String {
+        format!("{:04x}", self.product_id)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, TS)]

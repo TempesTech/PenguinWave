@@ -16,6 +16,7 @@ use std::sync::{Arc, RwLock};
 /// Nothing here is a process global: a test constructs as many as it likes.
 pub struct CoreState {
     pub backend: Arc<dyn PipeWireBackend>,
+    pub hid: Arc<dyn HidBackend>,
     pub devices: Arc<RwLock<DeviceRegistry>>,
     pub eq: Arc<EqManager>,
     pub chatmix: Arc<ChatMixController>,
@@ -30,12 +31,13 @@ impl CoreState {
         config: ConfigStore,
     ) -> Arc<Self> {
         let events = Arc::new(EventBus::new());
-        let devices = Arc::new(RwLock::new(DeviceRegistry::new(hid)));
+        let devices = Arc::new(RwLock::new(DeviceRegistry::new(hid.clone())));
         let eq = EqManager::new(backend.clone(), config.clone(), events.clone());
         let chatmix = ChatMixController::new(backend.clone(), devices.clone(), events.clone());
 
         Arc::new(Self {
             backend,
+            hid,
             devices,
             eq,
             chatmix,

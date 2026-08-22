@@ -80,6 +80,10 @@ impl DeviceRegistry {
         Ok(())
     }
 
+    pub fn clear_selection(&mut self) {
+        self.selected = None;
+    }
+
     pub fn is_present(&self, id: DeviceId) -> bool {
         self.present.contains(&id)
     }
