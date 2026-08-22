@@ -14,7 +14,6 @@ pkgbase = penguinwave
 	depends = webkit2gtk-4.1
 	depends = gtk3
 	depends = libayatana-appindicator
-	optdepends = waybar: system-tray host for wlroots/niri compositors
 	optdepends = polkit: privileged udev-rule install from the in-app Maintenance page
 	source = penguinwave-0.3.0.tar.gz::https://github.com/TempesTech/PenguinWave/archive/refs/tags/v0.3.0.tar.gz
 	sha256sums = SKIP

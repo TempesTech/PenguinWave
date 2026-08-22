@@ -50,6 +50,35 @@ fn daemon_connected(client: tauri::State<'_, Arc<DaemonClient>>) -> bool {
     client.is_connected()
 }
 
+/// Run the argv the daemon returned from `system.install_udev`.
+///
+/// The daemon never elevates itself; it hands back the command for a client
+/// to run under its own polkit agent. This is that client. The argv always
+/// starts with `pkexec`, so this is the one place in the UI that prompts for
+/// a password -- and only on an explicit user action, never on its own.
+#[tauri::command]
+async fn run_privileged_command(argv: Vec<String>) -> Result<String, String> {
+    let Some((program, args)) = argv.split_first() else {
+        return Err("empty command".into());
+    };
+    let program = program.clone();
+    let args = args.to_vec();
+
+    tauri::async_runtime::spawn_blocking(move || {
+        let output = std::process::Command::new(&program)
+            .args(&args)
+            .output()
+            .map_err(|e| format!("failed to run {program}: {e}"))?;
+        if output.status.success() {
+            Ok(String::from_utf8_lossy(&output.stdout).into_owned())
+        } else {
+            Err(String::from_utf8_lossy(&output.stderr).into_owned())
+        }
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
 /// Relays daemon pushes to the webview.
 struct WebviewRelay(AppHandle);
 
@@ -198,7 +227,8 @@ pub fn run() {
             daemon_request,
             daemon_connected,
             daemon_service_state,
-            enable_daemon_service
+            enable_daemon_service,
+            run_privileged_command
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

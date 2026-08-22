@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { invoke } from '@tauri-apps/api/core';
 import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,7 +24,7 @@ import {
   addUserDeviceMutation,
   removeUserDeviceMutation,
 } from '@/queries/user-device.query';
-import { AudioDevice } from '@/types/audio_manager';
+import { GET_OUTPUT_DEVICES_QUERY } from '@/queries/sink_manager.query';
 import { UserDevice } from '@/types/user-device';
 
 function AddDeviceModal({ onAdded }: { onAdded: () => void }) {
@@ -36,9 +35,8 @@ function AddDeviceModal({ onAdded }: { onAdded: () => void }) {
   const [productId, setProductId] = useState('');
   const [pipewireSink, setPipewireSink] = useState('');
 
-  const { data: outputDevices = [] } = useQuery<AudioDevice[]>({
-    queryKey: ['outputDevices'],
-    queryFn: () => invoke<AudioDevice[]>('get_output_devices'),
+  const { data: outputDevices = [] } = useQuery({
+    ...GET_OUTPUT_DEVICES_QUERY,
     enabled: open,
   });
 

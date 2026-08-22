@@ -17,7 +17,6 @@ depends=(
   'libayatana-appindicator'
 )
 optdepends=(
-  'waybar: system-tray host for wlroots/niri compositors'
   'polkit: privileged udev-rule install from the in-app Maintenance page'
 )
 # The .deb is the Tauri-built artifact: PenguinWave_<ver>_amd64.deb (note the

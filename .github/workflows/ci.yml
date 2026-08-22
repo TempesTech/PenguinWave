@@ -40,6 +40,11 @@ jobs:
       - name: Packaging
         run: ./scripts/check-packaging.sh
 
+      # invoke() is untyped by command name, so a call to a deleted or
+      # renamed Tauri command type-checks and fails only at runtime.
+      - name: UI Tauri commands
+        run: ./scripts/check-ui-commands.sh
+
   ui:
     runs-on: ubuntu-latest
     steps:

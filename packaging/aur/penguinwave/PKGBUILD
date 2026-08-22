@@ -22,7 +22,6 @@ makedepends=(
   'pkgconf'
 )
 optdepends=(
-  'waybar: system-tray host for wlroots/niri compositors'
   'polkit: privileged udev-rule install from the in-app Maintenance page'
 )
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
