@@ -217,3 +217,53 @@ fn shutdown_announces_itself_and_stops_the_loop() {
     assert!(!h.state.chatmix.is_running());
     assert!(rx.try_iter().any(|e| e.name() == "daemon.shutting_down"));
 }
+
+#[test]
+fn start_registers_a_graph_watch() {
+    let h = harness("watch");
+    h.state.start().unwrap();
+    assert!(
+        h.audio.is_watching(),
+        "nothing subscribed to graph changes, so the UI only ever sees its own mutations"
+    );
+}
+
+#[test]
+fn a_graph_change_publishes_the_lists_that_can_have_moved() {
+    let h = harness("watchevents");
+    h.state.start().unwrap();
+    let rx = h.state.events.subscribe();
+
+    h.audio.fire_graph_change();
+
+    let mut names: Vec<&'static str> = rx.try_iter().map(|e| e.name()).collect();
+    names.sort_unstable();
+    assert_eq!(
+        names,
+        ["graph.changed", "sink.list_changed", "stream.list_changed"]
+    );
+}
+
+#[test]
+fn a_failing_reconcile_still_starts_the_loops() {
+    let h = harness("resilient");
+    h.audio.set_unavailable(true);
+
+    // The failure is reported, but the loops are what recover from it.
+    assert!(h.state.start().is_err());
+    assert!(h.state.chatmix.is_running());
+}
+
+#[test]
+fn a_headset_plugged_in_after_start_is_noticed() {
+    let h = harness("latedevice");
+    h.state.start().unwrap();
+    assert_eq!(h.state.snapshot().unwrap().selected_device, None);
+
+    h.hid.add(NOVA7, vec![]);
+    // The poll loop calls the same path; drive it directly so the test does
+    // not wait on a timer.
+    h.state.refresh_devices().unwrap();
+
+    assert_eq!(h.state.snapshot().unwrap().selected_device, Some(NOVA7));
+}

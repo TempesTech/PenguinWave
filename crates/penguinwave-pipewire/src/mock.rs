@@ -40,6 +40,8 @@ struct State {
 #[derive(Clone)]
 pub struct MockBackend {
     state: Arc<Mutex<State>>,
+    /// Registered by `watch`, so a test can fire a graph change.
+    watcher: Arc<Mutex<Option<EventSink>>>,
     /// Calls made, in order, for asserting that a caller did what it claimed.
     pub calls: Arc<Mutex<Vec<String>>>,
 }
@@ -88,6 +90,7 @@ impl MockBackend {
                 chain_exits: Vec::new(),
             })),
             calls: Arc::new(Mutex::new(Vec::new())),
+            watcher: Arc::new(Mutex::new(None)),
         }
     }
 
@@ -123,6 +126,18 @@ impl MockBackend {
             port_name: "input_FL".into(),
             direction: PortDirection::Input,
         });
+    }
+
+    /// Fire the registered graph watch, as the audio server would.
+    pub fn fire_graph_change(&self) {
+        let sink = self.watcher.lock().unwrap().clone();
+        if let Some(sink) = sink {
+            sink();
+        }
+    }
+
+    pub fn is_watching(&self) -> bool {
+        self.watcher.lock().unwrap().is_some()
     }
 
     pub fn calls(&self) -> Vec<String> {
@@ -410,8 +425,9 @@ impl PipeWireBackend for MockBackend {
         })
     }
 
-    fn watch(&self, _sink: EventSink) -> Result<WatchHandle> {
+    fn watch(&self, sink: EventSink) -> Result<WatchHandle> {
         self.record("watch")?;
+        *self.watcher.lock().unwrap() = Some(sink);
         Ok(WatchHandle::new(Arc::new(AtomicBool::new(false))))
     }
 }

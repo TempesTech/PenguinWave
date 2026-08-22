@@ -7,9 +7,17 @@ use crate::events::EventBus;
 use crate::sinks;
 use crate::EqManager;
 use penguinwave_hid::{DeviceChange, DeviceRegistry, HidBackend};
-use penguinwave_pipewire::PipeWireBackend;
+use penguinwave_pipewire::{PipeWireBackend, WatchHandle};
 use penguinwave_proto::{DeviceId, Event, Snapshot};
-use std::sync::{Arc, RwLock};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex, RwLock};
+use std::time::Duration;
+
+/// How often headsets are re-enumerated.
+///
+/// `hidapi` has no attach notification here, so presence is polled. Slow
+/// enough to be free, fast enough that plugging a headset in feels immediate.
+const DEVICE_POLL: Duration = Duration::from_secs(2);
 
 /// Everything the daemon owns, held by `Arc` and passed to request handlers.
 ///
@@ -22,6 +30,10 @@ pub struct CoreState {
     pub chatmix: Arc<ChatMixController>,
     pub config: ConfigStore,
     pub events: Arc<EventBus>,
+    /// Dropping this stops the graph watch, so it is held for the daemon's
+    /// lifetime rather than discarded at the end of `start`.
+    watch: Mutex<Option<WatchHandle>>,
+    device_poll_running: AtomicBool,
 }
 
 impl CoreState {
@@ -43,6 +55,8 @@ impl CoreState {
             chatmix,
             config,
             events,
+            watch: Mutex::new(None),
+            device_poll_running: AtomicBool::new(false),
         })
     }
 
@@ -50,12 +64,69 @@ impl CoreState {
     ///
     /// Idempotent: the same path serves a cold start, a daemon restart and a
     /// PipeWire recovery, so it never assumes it is running first.
+    ///
+    /// A failing step is reported but does not stop the rest. The loops are
+    /// what recover from a bad start; skipping them because PipeWire was down
+    /// for a moment leaves the daemon permanently inert.
     pub fn start(self: &Arc<Self>) -> Result<()> {
-        sinks::reconcile(&*self.backend)?;
-        self.refresh_devices()?;
+        let reconciled = sinks::reconcile(&*self.backend);
+        if let Err(e) = &reconciled {
+            eprintln!("[core] sink reconcile failed: {e}");
+        }
+        if let Err(e) = self.refresh_devices() {
+            eprintln!("[core] device enumeration failed: {e}");
+        }
+
         self.eq.init();
         self.chatmix.start();
-        Ok(())
+        self.start_device_poll();
+        self.start_graph_watch();
+
+        reconciled.map(|_| ())
+    }
+
+    /// Publish graph changes the daemon did not cause.
+    ///
+    /// Without this the only events are the ones a client's own mutation
+    /// produced, so anything done elsewhere -- an application starting
+    /// playback, `pavucontrol`, a cable pulled -- never reaches the UI and it
+    /// silently goes stale.
+    fn start_graph_watch(self: &Arc<Self>) {
+        if self.watch.lock().unwrap().is_some() {
+            return;
+        }
+        let state = Arc::clone(self);
+        let sink: penguinwave_pipewire::EventSink = Arc::new(move || state.publish_graph());
+
+        match self.backend.watch(sink) {
+            Ok(handle) => *self.watch.lock().unwrap() = Some(handle),
+            Err(e) => eprintln!("[core] graph watch unavailable: {e}"),
+        }
+    }
+
+    /// One graph change fans out to the three lists that can have moved.
+    fn publish_graph(&self) {
+        self.events.publish(Event::GraphChanged);
+        if let Ok(streams) = self.backend.list_application_streams() {
+            self.events.publish(Event::StreamListChanged { streams });
+        }
+        if let Ok(sinks) = self.backend.list_sinks() {
+            self.events.publish(Event::SinkListChanged { sinks });
+        }
+    }
+
+    /// Re-enumerate headsets so one plugged in later is noticed.
+    fn start_device_poll(self: &Arc<Self>) {
+        if self.device_poll_running.swap(true, Ordering::SeqCst) {
+            return;
+        }
+        let state = Arc::clone(self);
+        std::thread::spawn(move || loop {
+            std::thread::sleep(DEVICE_POLL);
+            if let Err(e) = state.refresh_devices() {
+                eprintln!("[core] device enumeration failed: {e}");
+            }
+        });
     }
 
     /// Re-apply the desired state after PipeWire came back.
@@ -63,6 +134,10 @@ impl CoreState {
         let sinks = sinks::reconcile(&*self.backend)?;
         self.events.publish(Event::SinkListChanged { sinks });
         self.eq.init();
+        // The watch thread dies with the audio server it was polling.
+        *self.watch.lock().unwrap() = None;
+        self.start_graph_watch();
+        self.chatmix.start();
         Ok(())
     }
 
@@ -110,6 +185,7 @@ impl CoreState {
     /// survives a daemon restart.
     pub fn shutdown(&self) {
         self.events.publish(Event::DaemonShuttingDown);
+        *self.watch.lock().unwrap() = None;
         self.chatmix.stop();
         self.eq.shutdown();
     }

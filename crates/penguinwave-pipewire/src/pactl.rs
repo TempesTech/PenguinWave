@@ -206,18 +206,31 @@ impl PipeWireBackend for PactlBackend {
         )
     }
 
+    /// Linking is idempotent.
+    ///
+    /// `pw-link` fails with `File exists` when the link is already there. The
+    /// caller asked for the link to exist, and it does, so that is success:
+    /// treating it as an error makes every re-wire of an already-correct graph
+    /// look like a failure.
     fn link_ports(&self, source: &PortRef, target: &PortRef) -> Result<()> {
-        run_ok(
+        match run_ok(
             "pw-link",
             &[&Self::port_arg(source), &Self::port_arg(target)],
-        )
+        ) {
+            Err(e) if e.msg.contains("File exists") => Ok(()),
+            other => other,
+        }
     }
 
+    /// Unlinking is idempotent, for the same reason as [`Self::link_ports`].
     fn unlink_ports(&self, source: &PortRef, target: &PortRef) -> Result<()> {
-        run_ok(
+        match run_ok(
             "pw-link",
             &["-d", &Self::port_arg(source), &Self::port_arg(target)],
-        )
+        ) {
+            Err(e) if e.msg.contains("No such") || e.msg.contains("not found") => Ok(()),
+            other => other,
+        }
     }
 
     fn list_links(&self) -> Result<Vec<LinkInfo>> {
