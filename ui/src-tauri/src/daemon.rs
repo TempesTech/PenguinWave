@@ -19,8 +19,15 @@ use std::time::Duration;
 const BACKOFF_MIN: Duration = Duration::from_millis(100);
 const BACKOFF_MAX: Duration = Duration::from_secs(5);
 
-/// Emitted to the webview alongside daemon events.
-pub const CONNECTION_EVENT: &str = "daemon.connection";
+/// Tauri channel carrying every daemon event, the frame itself as payload.
+///
+/// One channel rather than one per event name: Tauri rejects event names
+/// containing a dot, and every protocol name has one. The webview dispatches
+/// on the frame's own `event` field.
+pub const DAEMON_EVENT: &str = "daemon:event";
+
+/// Tauri channel for socket up/down.
+pub const CONNECTION_EVENT: &str = "daemon:connection";
 
 pub fn socket_path() -> Option<PathBuf> {
     std::env::var_os("XDG_RUNTIME_DIR")

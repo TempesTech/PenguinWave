@@ -6,7 +6,7 @@ use crate::models;
 use crate::transport::{HidBackend, HidTransport};
 use penguinwave_proto::{BatteryInfo, DeviceDescriptor, DeviceId, DevicePresence};
 use std::collections::{BTreeSet, HashMap};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 /// A change in what is plugged in, produced by [`DeviceRegistry::refresh`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -24,6 +24,13 @@ pub struct DeviceRegistry {
     models: HashMap<DeviceId, Arc<dyn Headset>>,
     present: BTreeSet<DeviceId>,
     selected: Option<DeviceId>,
+    /// Handles kept open across calls.
+    ///
+    /// The ChatMix loop polls ten times a second; opening and closing the
+    /// device each time is wasted work and needless contention with anything
+    /// else holding it. A handle is dropped on first failure so the next call
+    /// reopens.
+    open: Mutex<HashMap<DeviceId, Box<dyn HidTransport>>>,
 }
 
 impl DeviceRegistry {
@@ -38,6 +45,7 @@ impl DeviceRegistry {
             models: models.into_iter().map(|m| (m.id(), m)).collect(),
             present: BTreeSet::new(),
             selected: None,
+            open: Mutex::new(HashMap::new()),
         }
     }
 
@@ -59,6 +67,10 @@ impl DeviceRegistry {
         }
         for id in self.present.difference(&now) {
             changes.push(DeviceChange::Detached(*id));
+        }
+        // A device that went away must not keep a stale handle.
+        for id in self.present.difference(&now) {
+            self.open.lock().unwrap().remove(id);
         }
         self.present = now;
 
@@ -125,15 +137,32 @@ impl DeviceRegistry {
         self.backend.open(id)
     }
 
-    /// Run one HID transaction against a device.
+    /// Run one HID transaction against a device, reusing an open handle.
+    ///
+    /// A failed transaction closes the handle: the usual cause is the device
+    /// going away, and a stale handle would fail forever.
     pub fn with_device<T>(
         &self,
         id: DeviceId,
         f: impl FnOnce(&dyn Headset, &mut dyn HidTransport) -> Result<T>,
     ) -> Result<T> {
         let model = self.model(id)?;
-        let mut transport = self.open(id)?;
-        f(model.as_ref(), transport.as_mut())
+
+        let mut transport = match self.open.lock().unwrap().remove(&id) {
+            Some(handle) => handle,
+            None => self.open(id)?,
+        };
+
+        let result = f(model.as_ref(), transport.as_mut());
+        if result.is_ok() {
+            self.open.lock().unwrap().insert(id, transport);
+        }
+        result
+    }
+
+    /// Drop every cached handle.
+    pub fn close_all(&self) {
+        self.open.lock().unwrap().clear();
     }
 
     pub fn set_sidetone(&self, id: DeviceId, level: u8) -> Result<()> {

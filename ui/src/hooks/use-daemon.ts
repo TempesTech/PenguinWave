@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   isConnected,
+  onAnyDaemonEvent,
   onConnectionChange,
-  onDaemonEvent,
   type DaemonEventName,
 } from '@/lib/daemon';
 
@@ -32,16 +32,13 @@ export function useDaemonEvents() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const names = Object.keys(INVALIDATES) as DaemonEventName[];
-    const unlisten = names.map((name) =>
-      onDaemonEvent(name, () => {
-        for (const queryKey of INVALIDATES[name]) {
-          void queryClient.invalidateQueries({ queryKey });
-        }
-      }),
-    );
+    const unlisten = onAnyDaemonEvent((event) => {
+      for (const queryKey of INVALIDATES[event.event] ?? []) {
+        void queryClient.invalidateQueries({ queryKey });
+      }
+    });
     return () => {
-      unlisten.forEach((p) => void p.then((off) => off()));
+      void unlisten.then((off) => off());
     };
   }, [queryClient]);
 }

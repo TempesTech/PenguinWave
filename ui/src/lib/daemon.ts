@@ -18,7 +18,10 @@ export type PayloadOf<K extends ResponseKind> = Extract<Response, { kind: K }> e
   ? D
   : void;
 
-export const CONNECTION_EVENT = 'daemon.connection';
+// Tauri rejects event names containing a dot and every protocol name has one,
+// so all daemon events arrive on one channel and are dispatched here.
+export const DAEMON_EVENT = 'daemon:event';
+export const CONNECTION_EVENT = 'daemon:connection';
 
 export class DaemonError extends Error {
   constructor(readonly detail: PwError) {
@@ -80,7 +83,16 @@ export function onDaemonEvent<N extends DaemonEventName>(
   name: N,
   handler: (event: Extract<DaemonEvent, { event: N }>) => void,
 ) {
-  return listen<Extract<DaemonEvent, { event: N }>>(name, (e) => handler(e.payload));
+  return listen<DaemonEvent>(DAEMON_EVENT, (e) => {
+    if (e.payload.event === name) {
+      handler(e.payload as Extract<DaemonEvent, { event: N }>);
+    }
+  });
+}
+
+/// Subscribe to every daemon event.
+export function onAnyDaemonEvent(handler: (event: DaemonEvent) => void) {
+  return listen<DaemonEvent>(DAEMON_EVENT, (e) => handler(e.payload));
 }
 
 export function onConnectionChange(handler: (connected: boolean) => void) {

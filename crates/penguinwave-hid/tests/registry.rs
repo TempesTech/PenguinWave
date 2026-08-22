@@ -186,3 +186,57 @@ fn hidapi_failure_surfaces_from_refresh() {
         HidError::ApiUnavailable(_)
     ));
 }
+
+#[test]
+fn the_device_is_opened_once_across_many_polls() {
+    let backend = Arc::new(MockBackend::new());
+    let replies: Vec<Vec<u8>> = (0..5).map(|_| report(4, 50, 50)).collect();
+    backend.add(nova7(), replies);
+    let mut reg = registry(backend.clone());
+    reg.refresh().unwrap();
+
+    for _ in 0..5 {
+        reg.read_chatmix(nova7()).unwrap();
+    }
+
+    assert_eq!(
+        backend.opens(),
+        1,
+        "the poll loop reopened the device instead of holding it"
+    );
+}
+
+#[test]
+fn a_failed_transaction_drops_the_handle() {
+    let backend = Arc::new(MockBackend::new());
+    backend.add(nova7(), vec![report(4, 50, 50)]);
+    let mut reg = registry(backend.clone());
+    reg.refresh().unwrap();
+
+    reg.read_chatmix(nova7()).unwrap();
+    // Replies exhausted: this reuses the cached handle and fails, which must
+    // drop it rather than leave it to fail forever.
+    assert!(reg.read_chatmix(nova7()).is_err());
+    backend.add_replies(nova7(), vec![report(4, 50, 50)]);
+    reg.read_chatmix(nova7()).unwrap();
+
+    // Opened for the first call, and again after the failure discarded it.
+    assert_eq!(backend.opens(), 2);
+}
+
+#[test]
+fn a_detached_device_does_not_keep_a_stale_handle() {
+    let backend = Arc::new(MockBackend::new());
+    backend.add(nova7(), vec![report(4, 50, 50)]);
+    let mut reg = registry(backend.clone());
+    reg.refresh().unwrap();
+    reg.read_chatmix(nova7()).unwrap();
+
+    backend.remove(nova7());
+    reg.refresh().unwrap();
+    backend.add(nova7(), vec![report(4, 50, 50)]);
+    reg.refresh().unwrap();
+    reg.read_chatmix(nova7()).unwrap();
+
+    assert_eq!(backend.opens(), 2, "a handle survived the device leaving");
+}

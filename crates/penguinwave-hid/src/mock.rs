@@ -21,6 +21,7 @@ pub struct MockBackend {
     state: Mutex<HashMap<DeviceId, Arc<Mutex<MockState>>>>,
     unavailable: Mutex<bool>,
     denied: Mutex<Vec<DeviceId>>,
+    opens: Mutex<usize>,
 }
 
 impl MockBackend {
@@ -36,6 +37,18 @@ impl MockBackend {
         self.devices.lock().unwrap().push(id);
         self.state.lock().unwrap().insert(id, state.clone());
         state
+    }
+
+    /// How many times a device was opened, for asserting handle reuse.
+    pub fn opens(&self) -> usize {
+        *self.opens.lock().unwrap()
+    }
+
+    /// Queue more replies on an existing device.
+    pub fn add_replies(&self, id: DeviceId, replies: Vec<Vec<u8>>) {
+        if let Some(state) = self.state.lock().unwrap().get(&id) {
+            state.lock().unwrap().replies.extend(replies);
+        }
     }
 
     pub fn remove(&self, id: DeviceId) {
@@ -69,9 +82,12 @@ impl HidBackend for MockBackend {
             return Err(HidError::PermissionDenied(id.vendor_id, id.product_id));
         }
         match self.state.lock().unwrap().get(&id) {
-            Some(state) => Ok(Box::new(MockTransport {
-                state: state.clone(),
-            })),
+            Some(state) => {
+                *self.opens.lock().unwrap() += 1;
+                Ok(Box::new(MockTransport {
+                    state: state.clone(),
+                }))
+            }
             None => Err(HidError::Absent(id.vendor_id, id.product_id)),
         }
     }

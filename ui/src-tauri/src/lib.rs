@@ -5,7 +5,7 @@
 
 mod daemon;
 
-use daemon::{DaemonClient, EventRelay, CONNECTION_EVENT};
+use daemon::{DaemonClient, EventRelay, CONNECTION_EVENT, DAEMON_EVENT};
 use penguinwave_proto::{EventFrame, Request, Response};
 use std::sync::Arc;
 use tauri::menu::{Menu, MenuItem};
@@ -36,16 +36,22 @@ fn daemon_connected(client: tauri::State<'_, Arc<DaemonClient>>) -> bool {
     client.is_connected()
 }
 
-/// Relays daemon pushes to the webview under their protocol names.
+/// Relays daemon pushes to the webview.
 struct WebviewRelay(AppHandle);
 
 impl EventRelay for WebviewRelay {
     fn event(&self, frame: &EventFrame) {
-        let _ = self.0.emit(frame.event.name(), &frame.event);
+        // A failed emit is why the UI would look frozen while the daemon is
+        // plainly working, so it is reported rather than swallowed.
+        if let Err(e) = self.0.emit(DAEMON_EVENT, &frame.event) {
+            eprintln!("[ui] dropping {}: {e}", frame.event.name());
+        }
     }
 
     fn connection(&self, connected: bool) {
-        let _ = self.0.emit(CONNECTION_EVENT, connected);
+        if let Err(e) = self.0.emit(CONNECTION_EVENT, connected) {
+            eprintln!("[ui] dropping connection state: {e}");
+        }
     }
 }
 

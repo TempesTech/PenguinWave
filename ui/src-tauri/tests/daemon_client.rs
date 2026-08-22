@@ -192,3 +192,33 @@ fn a_call_without_a_daemon_fails_instead_of_hanging() {
     assert!(!client.is_connected());
     assert!(client.call(Request::SinkDefault).is_err());
 }
+
+/// Tauri rejects an event name with any character outside this set, and
+/// returns an error the relay used to swallow. Every protocol event name
+/// contains a dot, so emitting under those names dropped all of them and the
+/// UI looked frozen while the daemon was working.
+fn tauri_accepts(name: &str) -> bool {
+    name.chars()
+        .all(|c| c.is_alphanumeric() || c == '-' || c == '/' || c == ':' || c == '_')
+}
+
+#[test]
+fn the_tauri_channel_names_are_legal() {
+    assert!(
+        tauri_accepts(daemon::DAEMON_EVENT),
+        "{}",
+        daemon::DAEMON_EVENT
+    );
+    assert!(
+        tauri_accepts(daemon::CONNECTION_EVENT),
+        "{}",
+        daemon::CONNECTION_EVENT
+    );
+}
+
+#[test]
+fn protocol_event_names_are_not_usable_as_tauri_channels() {
+    // The reason for the single-channel design. If this ever stops holding,
+    // per-event channels become possible again.
+    assert!(!tauri_accepts(Event::GraphChanged.name()));
+}
