@@ -7,12 +7,16 @@
 //!
 //! Contains no transport: it does not know that sockets exist.
 
+pub mod chatmix;
 pub mod config;
 pub mod eq;
 pub mod error;
 pub mod events;
+pub mod sinks;
+pub mod state;
 
 pub use config::ConfigStore;
 pub use eq::EqManager;
 pub use error::{CoreError, Result};
 pub use events::EventBus;
+pub use state::CoreState;

@@ -68,6 +68,9 @@ impl EqManager {
             self.events.publish(Event::EqSafeMode { active: true });
             return;
         }
+        if self.running.load(Ordering::SeqCst) && self.child.lock().unwrap().is_some() {
+            return;
+        }
 
         if let Err(e) = self.start_chain() {
             eprintln!("[eq] failed to start filter chain: {e}");

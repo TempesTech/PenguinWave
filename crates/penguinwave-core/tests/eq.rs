@@ -5,34 +5,15 @@ use penguinwave_pipewire::{MockBackend, PipeWireBackend};
 use penguinwave_proto::{EqBand, EqChainId, FilterType, MAX_BANDS};
 use std::sync::Arc;
 
+mod common;
+use common::TempDir;
+
 struct Harness {
     manager: Arc<EqManager>,
     backend: Arc<MockBackend>,
     events: Arc<EventBus>,
     store: ConfigStore,
     _dir: TempDir,
-}
-
-/// Config root that removes itself.
-struct TempDir(std::path::PathBuf);
-
-impl TempDir {
-    fn new(tag: &str) -> Self {
-        let path = std::env::temp_dir().join(format!(
-            "penguinwave-core-{tag}-{}-{:?}",
-            std::process::id(),
-            std::thread::current().id()
-        ));
-        let _ = std::fs::remove_dir_all(&path);
-        std::fs::create_dir_all(&path).unwrap();
-        TempDir(path)
-    }
-}
-
-impl Drop for TempDir {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_dir_all(&self.0);
-    }
 }
 
 fn harness(tag: &str) -> Harness {
