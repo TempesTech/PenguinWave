@@ -138,6 +138,14 @@ impl CoreState {
 
     /// One graph change fans out to the three lists that can have moved.
     fn publish_graph(&self) {
+        // A PipeWire restart wipes game_sink/chat_sink along with everything
+        // else; only `start()` used to re-create them, so a live crash+restart
+        // left the daemon running but permanently missing its own sinks. Adopt-
+        // or-create here too, before routing and the lists go out.
+        if let Err(e) = sinks::reconcile(&*self.backend) {
+            eprintln!("[core] sink reconcile failed: {e}");
+        }
+
         // A node reappearing is the common case for a graph change, and it
         // arrives with no links, so routing is restored before the lists go
         // out and clients render them.

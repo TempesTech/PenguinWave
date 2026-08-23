@@ -109,6 +109,20 @@ impl EqManager {
                 Some(device) => {
                     if let Err(e) = wiring::wire_through_eq(&*self.backend, chain, &device) {
                         eprintln!("[eq] wiring {chain:?} through the EQ failed: {e}");
+                        // The resolved device may itself be stale (e.g. an
+                        // orphaned link into a managed node); retry once
+                        // against a freshly-resolved real output.
+                        if let Some(fallback) = wiring::fallback_output_device(&*self.backend) {
+                            if fallback != device {
+                                if let Err(e) =
+                                    wiring::wire_through_eq(&*self.backend, chain, &fallback)
+                                {
+                                    eprintln!(
+                                        "[eq] retry wiring {chain:?} through the EQ failed: {e}"
+                                    );
+                                }
+                            }
+                        }
                     }
                 }
                 None => eprintln!("[eq] no physical output device found for {chain:?}"),

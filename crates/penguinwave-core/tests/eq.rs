@@ -254,3 +254,61 @@ fn routing_the_eq_into_a_managed_node_is_refused() {
         );
     }
 }
+
+const HEADSET_SINK: &str = "alsa_output.usb-SteelSeries_Arctis_Nova_7-00.analog-stereo";
+
+/// An orphaned filter-chain from a killed daemon can leave its EQ output
+/// linked back into a managed sink (game_sink/chat_sink) instead of the real
+/// device. A fresh daemon's `init()` must not treat that stale target as
+/// trustworthy and give up -- it should fall back to a real output.
+///
+/// Built on an empty graph, not the captured fixture: that one already has
+/// the EQ correctly wired to the headset, which would mask exactly the bug
+/// this test exists to catch.
+#[test]
+fn init_recovers_from_a_stale_eq_output_pointed_at_a_managed_node() {
+    use penguinwave_pipewire::{MockBackend, PipeWireBackend};
+    use penguinwave_proto::PortRef;
+
+    let dir = TempDir::new("staleorphan");
+    let backend = Arc::new(MockBackend::empty());
+    backend.add_sink(HEADSET_SINK);
+    backend.add_node("penguinwave_eq_game", 9001);
+    backend.add_node("penguinwave_eq_chat", 9002);
+
+    let port = |node: &str, name: &str| PortRef {
+        node_name: node.to_string(),
+        port_name: name.to_string(),
+        id: None,
+    };
+    // The orphan: the EQ output node already exists, wired into game_sink
+    // instead of a real device, as it would be left by a previous daemon.
+    backend
+        .link_ports(
+            &port("penguinwave_eq_game_out", "output_FL"),
+            &port("game_sink", "playback_FL"),
+        )
+        .unwrap();
+
+    let store = ConfigStore::new(&dir.0);
+    let events = Arc::new(EventBus::new());
+    let manager = EqManager::new(backend.clone(), store, events);
+    manager.init();
+
+    let targets: Vec<String> = backend
+        .list_links()
+        .unwrap()
+        .into_iter()
+        .filter(|l| l.source.node_name == "penguinwave_eq_game_out")
+        .map(|l| l.target.node_name)
+        .collect();
+
+    assert!(
+        targets.iter().any(|n| n == HEADSET_SINK),
+        "the EQ never reached a real device, still pointing at: {targets:?}"
+    );
+    assert!(
+        !targets.iter().any(|n| n == "game_sink"),
+        "the stale feedback link into game_sink was never cleared: {targets:?}"
+    );
+}

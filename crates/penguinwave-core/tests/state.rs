@@ -430,3 +430,28 @@ fn routing_a_sink_keeps_the_eq_in_the_path() {
         "the monitor feeds the device directly, bypassing the EQ: {monitor_targets:?}"
     );
 }
+
+/// A live graph change is the only signal the daemon gets when PipeWire
+/// itself crashes and restarts underneath it -- `start()` is not called
+/// again. If the reconnect handler only re-links existing sinks and never
+/// recreates them, a PipeWire crash permanently loses game_sink/chat_sink
+/// until someone manually restarts the daemon.
+#[test]
+fn a_graph_change_recreates_sinks_lost_to_a_pipewire_restart() {
+    let h = harness("pwcrash");
+    h.state.start().unwrap();
+    assert!(sinks::sinks_ready(&h.audio.list_sinks().unwrap()));
+
+    // PipeWire restarting wipes every node, managed sinks included.
+    h.audio.remove_sink(penguinwave_proto::GAME_SINK);
+    h.audio.remove_sink(penguinwave_proto::CHAT_SINK);
+    assert!(!sinks::sinks_ready(&h.audio.list_sinks().unwrap()));
+
+    // The graph-watch callback is the only thing that fires here, not start().
+    h.audio.fire_graph_change();
+
+    assert!(
+        sinks::sinks_ready(&h.audio.list_sinks().unwrap()),
+        "the live graph-watch path never recreated the managed sinks"
+    );
+}

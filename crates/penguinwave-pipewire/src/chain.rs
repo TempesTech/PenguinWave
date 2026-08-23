@@ -16,6 +16,13 @@ pub trait ChainProcess: Send {
 }
 
 pub(crate) fn spawn(conf_path: &Path) -> Result<Box<dyn ChainProcess>, PwError> {
+    // PR_SET_PDEATHSIG below should kill an old chain along with its daemon,
+    // but that signal tracks the exact thread that called it, not the whole
+    // process -- on a multi-threaded async runtime it can be silently missed.
+    // Reap any chain still running the same conf as a fallback so a killed
+    // daemon never leaves a duplicate chain behind on the next start.
+    reap_stale(conf_path);
+
     let mut command = Command::new("pipewire");
     command
         .arg("-c")
@@ -47,6 +54,19 @@ pub(crate) fn spawn(conf_path: &Path) -> Result<Box<dyn ChainProcess>, PwError> 
 
     Ok(Box::new(SpawnedChain { child }))
 }
+
+#[cfg(target_os = "linux")]
+fn reap_stale(conf_path: &Path) {
+    let _ = Command::new("pkill")
+        .arg("-f")
+        .arg(format!("pipewire -c {}", conf_path.display()))
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status();
+}
+
+#[cfg(not(target_os = "linux"))]
+fn reap_stale(_conf_path: &Path) {}
 
 struct SpawnedChain {
     child: Child,

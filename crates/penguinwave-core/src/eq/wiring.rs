@@ -59,7 +59,7 @@ fn reject_managed(device: &str) -> Result<()> {
 /// otherwise the first ALSA or Bluetooth sink.
 pub fn fallback_output_device(backend: &dyn PipeWireBackend) -> Option<String> {
     if let Ok(default) = backend.default_sink() {
-        if !is_managed_node(&default) && !default.starts_with("auto_null") {
+        if !default.is_empty() && !is_managed_node(&default) && !default.starts_with("auto_null") {
             return Some(default);
         }
     }
@@ -86,8 +86,11 @@ pub fn current_device_target(
     chain: EqChainId,
 ) -> Result<Option<String>> {
     let eq_out = port(output_node_name(chain), "output_FL".into());
-    if let Some(target) = targets_of(backend, &eq_out)?.first() {
-        return Ok(Some(target.node_name.clone()));
+    if let Some(target) = targets_of(backend, &eq_out)?
+        .into_iter()
+        .find(|t| !is_managed_node(&t.node_name))
+    {
+        return Ok(Some(target.node_name));
     }
 
     let monitor = port(source_sink_for(chain), "monitor_FL".into());
