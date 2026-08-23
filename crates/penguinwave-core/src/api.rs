@@ -257,6 +257,10 @@ impl CoreState {
     fn route_sink(&self, sink: &str, device: &str) -> Result<()> {
         match crate::eq::nodes::chain_for_sink(sink) {
             Some(chain) if self.eq.is_active() => {
+                // Same lock the graph-watch and the EQ's own chain-respawn
+                // path take: without it a user-triggered reroute can race
+                // either of them into a half-wired, doubly-linked graph.
+                let _wiring = self.eq.wiring_lock();
                 crate::eq::wiring::wire_through_eq(&*self.backend, chain, device)?;
             }
             _ => self.backend.route_sink_to_device(sink, device)?,

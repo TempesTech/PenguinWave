@@ -38,6 +38,18 @@ pub struct EqManager {
     child: Mutex<Option<Box<dyn ChainProcess>>>,
     dirty: AtomicBool,
     running: AtomicBool,
+    /// Held for the duration of any EQ output wiring.
+    ///
+    /// This manager's own chain-respawn path and `CoreState`'s graph-watch
+    /// route reconciliation both wire the same chain, on different threads,
+    /// with no other coordination between them. `wiring::relink` only clears
+    /// links that don't match its own caller's target, so two overlapping
+    /// calls resolving different devices from different snapshots of a
+    /// just-recovered graph can each partially succeed, leaving both links
+    /// live -- a real feedback loop. Serializing every wiring call against
+    /// this lock means the second caller always reads a graph the first
+    /// caller already finished settling, rather than one still in flux.
+    wiring: Mutex<()>,
 }
 
 impl EqManager {
@@ -56,7 +68,16 @@ impl EqManager {
             child: Mutex::new(None),
             dirty: AtomicBool::new(false),
             running: AtomicBool::new(false),
+            wiring: Mutex::new(()),
         })
+    }
+
+    /// Serialize a wiring operation against this chain's own respawn path.
+    ///
+    /// Any code outside this module that calls into `wiring::` for a chain
+    /// this manager owns must hold this lock first.
+    pub fn wiring_lock(&self) -> std::sync::MutexGuard<'_, ()> {
+        self.wiring.lock().unwrap()
     }
 
     /// Spawn the chain, resolve its nodes, apply state and wire the routing.
@@ -85,6 +106,11 @@ impl EqManager {
     }
 
     fn start_chain(self: &Arc<Self>) -> Result<()> {
+        // Held for the whole read-resolve-wire sequence below: a concurrent
+        // route reconciliation on another thread must not observe or mutate
+        // the graph mid-way through this.
+        let _wiring = self.wiring_lock();
+
         // Remember where each sink points so the EQ output can take that route.
         let mut routes: HashMap<EqChainId, String> = HashMap::new();
         for chain in EqChainId::ALL {

@@ -133,6 +133,10 @@ impl CoreState {
         if routes.0.is_empty() {
             return Ok(Vec::new());
         }
+        // The EQ's own chain-respawn path wires the same chains on its own
+        // thread; this lock keeps the two from interleaving into a graph
+        // where both partially wired their own idea of the target device.
+        let _wiring = self.eq.wiring_lock();
         routes::reconcile(&*self.backend, &routes, self.eq.is_active())
     }
 

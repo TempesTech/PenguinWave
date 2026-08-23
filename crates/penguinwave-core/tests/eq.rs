@@ -312,3 +312,38 @@ fn init_recovers_from_a_stale_eq_output_pointed_at_a_managed_node() {
         "the stale feedback link into game_sink was never cleared: {targets:?}"
     );
 }
+
+/// `CoreState`'s graph-watch route reconciliation and this manager's own
+/// chain-respawn path both wire the same chain, on different threads, with
+/// no other coordination. Without a shared lock they can each resolve a
+/// different target from a different snapshot of the graph and both
+/// partially succeed, leaving the EQ output linked to two devices at once --
+/// a real feedback loop seen live after a PipeWire crash. `wiring_lock()` is
+/// the fix; this proves it actually serializes, not just that it compiles.
+#[test]
+fn init_waits_for_an_external_holder_of_the_wiring_lock() {
+    use std::sync::mpsc;
+    use std::thread;
+    use std::time::Duration;
+
+    let h = harness("lockorder");
+    let guard = h.manager.wiring_lock();
+
+    let (tx, rx) = mpsc::channel();
+    let manager = h.manager.clone();
+    let handle = thread::spawn(move || {
+        manager.init();
+        tx.send(()).unwrap();
+    });
+
+    thread::sleep(Duration::from_millis(100));
+    assert!(
+        rx.try_recv().is_err(),
+        "init() wired the chain while an external caller still held the lock"
+    );
+
+    drop(guard);
+    rx.recv_timeout(Duration::from_secs(2))
+        .expect("init() never proceeded after the lock was released");
+    handle.join().unwrap();
+}
