@@ -10,12 +10,12 @@ use penguinwave_proto::{
     StreamInfo, StreamRef,
 };
 
-use crate::backend::{PipeWireBackend, Result, ServerInfo};
-use crate::chain::ChainProcess;
-use crate::cmd::{run, run_ok};
+use crate::domain::backend::{PipeWireBackend, Result, ServerInfo};
+use crate::domain::chain::ChainProcess;
+use crate::transport::cmd::{run, run_ok};
 use crate::icons;
-use crate::parse;
-use crate::watch::{EventSink, WatchHandle};
+use crate::domain::parse;
+use crate::transport::watch::{EventSink, WatchHandle};
 
 /// Interval between graph polls.
 ///
@@ -327,7 +327,7 @@ impl PipeWireBackend for PactlBackend {
     }
 
     fn spawn_filter_chain(&self, conf_path: &std::path::Path) -> Result<Box<dyn ChainProcess>> {
-        crate::chain::spawn(conf_path)
+        crate::domain::chain::spawn(conf_path)
     }
 
     fn probe(&self) -> Result<ServerInfo> {

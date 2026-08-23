@@ -4,7 +4,7 @@ use std::process::Command;
 
 use penguinwave_proto::{ErrorKind, PwError};
 
-use crate::parse::is_tool_error;
+use crate::domain::parse::is_tool_error;
 
 /// Run a command and return stdout.
 ///

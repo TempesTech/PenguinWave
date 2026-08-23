@@ -5,8 +5,8 @@ use penguinwave_proto::{
     StreamInfo, StreamRef,
 };
 
-use crate::chain::ChainProcess;
-use crate::watch::{EventSink, WatchHandle};
+use crate::domain::chain::ChainProcess;
+use crate::transport::watch::{EventSink, WatchHandle};
 
 pub type Result<T> = std::result::Result<T, PwError>;
 

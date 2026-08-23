@@ -12,10 +12,10 @@ use penguinwave_proto::{
     SinkConfig, SinkInfo, StreamInfo, StreamRef,
 };
 
-use crate::backend::{PipeWireBackend, Result, ServerInfo};
-use crate::chain::ChainProcess;
-use crate::parse;
-use crate::watch::{EventSink, WatchHandle};
+use crate::domain::backend::{PipeWireBackend, Result, ServerInfo};
+use crate::domain::chain::ChainProcess;
+use crate::domain::parse;
+use crate::transport::watch::{EventSink, WatchHandle};
 
 const SINKS: &str = include_str!("../tests/fixtures/sinks_full.txt");
 const SINK_INPUTS: &str = include_str!("../tests/fixtures/sink_inputs_full.txt");

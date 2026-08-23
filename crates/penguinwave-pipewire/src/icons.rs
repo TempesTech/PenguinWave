@@ -6,7 +6,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::parse::RawStream;
+use crate::domain::parse::RawStream;
 
 const ICON_DIRS: &[&str] = &[
     "/usr/share/icons/hicolor",
