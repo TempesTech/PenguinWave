@@ -1,6 +1,6 @@
 //! The socket's permissions are its only authentication.
 
-#[path = "../src/socket.rs"]
+#[path = "../src/transport/socket.rs"]
 mod socket;
 
 use std::os::unix::fs::PermissionsExt;

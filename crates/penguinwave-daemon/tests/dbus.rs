@@ -9,7 +9,7 @@ use penguinwave_pipewire::MockBackend;
 use std::sync::Arc;
 use zbus::blocking::Connection;
 
-#[path = "../src/dbus.rs"]
+#[path = "../src/transport/dbus.rs"]
 mod dbus;
 
 fn tagged(tag: &str) -> (String, String) {

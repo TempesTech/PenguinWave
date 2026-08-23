@@ -1,7 +1,7 @@
 //! One client connection.
 
-use crate::framing::{read_frame, write_frame, FrameError};
-use crate::ratelimit::RateLimiter;
+use crate::transport::framing::{read_frame, write_frame, FrameError};
+use crate::session::ratelimit::RateLimiter;
 use penguinwave_core::{dispatch, CoreState};
 use penguinwave_proto::{
     version_supported, ErrorKind, Event, EventFrame, Hello, PwError, Request, RequestFrame,

@@ -1,12 +1,11 @@
 //! Penguin Wave audio daemon.
 
-mod dbus;
-mod framing;
 mod notify;
-mod ratelimit;
 mod session;
-mod socket;
-mod supervisor;
+mod transport;
+
+use session::supervisor;
+use transport::{dbus, socket};
 
 use penguinwave_core::{ConfigStore, CoreState};
 use penguinwave_hid::HidApiBackend;
@@ -63,7 +62,7 @@ fn run() -> Result<(), String> {
         match stream {
             Ok(stream) => {
                 let state = state.clone();
-                std::thread::spawn(move || session::serve(stream, state, VERSION));
+                std::thread::spawn(move || session::session::serve(stream, state, VERSION));
             }
             Err(e) => eprintln!("[daemon] accept failed: {e}"),
         }

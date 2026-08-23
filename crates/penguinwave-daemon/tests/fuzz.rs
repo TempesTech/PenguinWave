@@ -12,12 +12,16 @@ use std::os::unix::net::{UnixListener, UnixStream};
 use std::sync::Arc;
 use std::time::Duration;
 
-#[path = "../src/framing.rs"]
-mod framing;
-#[path = "../src/ratelimit.rs"]
-mod ratelimit;
-#[path = "../src/session.rs"]
-mod session;
+#[path = "../src/transport"]
+mod transport {
+    pub mod framing;
+}
+#[path = "../src/session"]
+mod session {
+    pub mod ratelimit;
+    pub mod session;
+}
+use session::session as session_mod;
 
 struct Server {
     path: std::path::PathBuf,
@@ -45,7 +49,7 @@ fn start(tag: &str) -> Server {
     std::thread::spawn(move || {
         for stream in listener.incoming().flatten() {
             let state = state.clone();
-            std::thread::spawn(move || session::serve(stream, state, "0.3.0-test"));
+            std::thread::spawn(move || session_mod::serve(stream, state, "0.3.0-test"));
         }
     });
     Server { path, dir }
