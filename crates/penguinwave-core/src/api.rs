@@ -5,9 +5,8 @@
 
 use crate::error::{CoreError, Result};
 use crate::state::CoreState;
-use crate::system;
 use penguinwave_pipewire::icons;
-use penguinwave_proto::{Event, Request, Response, UdevStatus};
+use penguinwave_proto::{Event, Request, Response};
 
 /// Methods handled by the daemon's session layer rather than here.
 pub fn is_session_method(request: &Request) -> bool {
@@ -30,23 +29,23 @@ pub fn dispatch(state: &CoreState, request: Request) -> Result<Response> {
 
         Request::StreamMove { stream, sink } => {
             state.backend.move_stream_to_sink(&stream, &sink)?;
-            state.publish_streams()
+            publish_streams(state)
         }
 
         Request::StreamUnassign { stream } => {
             let default = state.backend.default_sink()?;
             state.backend.move_stream_to_sink(&stream, &default)?;
-            state.publish_streams()
+            publish_streams(state)
         }
 
         Request::StreamSetVolume { stream, pct } => {
             state.backend.set_stream_volume(&stream, pct.min(100))?;
-            state.publish_streams()
+            publish_streams(state)
         }
 
         Request::StreamSetMute { stream, mute } => {
             state.backend.set_stream_mute(&stream, mute)?;
-            state.publish_streams()
+            publish_streams(state)
         }
 
         Request::StreamIcon { key } => Ok(Response::Icon(icons::icon_base64(&key))),
@@ -54,12 +53,12 @@ pub fn dispatch(state: &CoreState, request: Request) -> Result<Response> {
         // ---- sinks ----
         Request::SinkCreate { config } => {
             state.backend.create_virtual_sink(&config)?;
-            state.publish_sinks()
+            publish_sinks(state)
         }
 
         Request::SinkDelete { name } => {
             state.backend.delete_virtual_sink(&name)?;
-            state.publish_sinks()
+            publish_sinks(state)
         }
 
         Request::SinkList => Ok(Response::Sinks(state.backend.list_sinks()?)),
@@ -76,7 +75,7 @@ pub fn dispatch(state: &CoreState, request: Request) -> Result<Response> {
 
         Request::SinkSetVolume { sink, pct } => {
             state.backend.set_sink_volume(&sink, pct.min(100))?;
-            state.publish_sinks()
+            publish_sinks(state)
         }
 
         Request::SinkDefault => Ok(Response::SinkName(state.backend.default_sink()?)),
@@ -87,7 +86,7 @@ pub fn dispatch(state: &CoreState, request: Request) -> Result<Response> {
 
         Request::SinkRouteToDevice { sink, device } => {
             state.route_sink(&sink, &device)?;
-            state.publish_sinks()
+            publish_sinks(state)
         }
 
         Request::SinkListOutputDevices => Ok(Response::OutputDevices(
@@ -229,55 +228,18 @@ pub fn dispatch(state: &CoreState, request: Request) -> Result<Response> {
     }
 }
 
-impl CoreState {
-    fn publish_streams(&self) -> Result<Response> {
-        let streams = self.backend.list_application_streams()?;
-        self.events.publish(Event::StreamListChanged {
-            streams: streams.clone(),
-        });
-        Ok(Response::Streams(streams))
-    }
+fn publish_streams(state: &CoreState) -> Result<Response> {
+    let streams = state.backend.list_application_streams()?;
+    state.events.publish(Event::StreamListChanged {
+        streams: streams.clone(),
+    });
+    Ok(Response::Streams(streams))
+}
 
-    fn publish_sinks(&self) -> Result<Response> {
-        let sinks = self.backend.list_sinks()?;
-        self.events.publish(Event::SinkListChanged {
-            sinks: sinks.clone(),
-        });
-        Ok(Response::Sinks(sinks))
-    }
-
-    /// Point a sink at an output device, following it with the EQ when one of
-    /// the managed sinks moves.
-    /// Point a sink at an output device.
-    ///
-    /// With the EQ inserted the whole chain is re-wired, not just the output.
-    /// `route_sink_to_device` drops every link from the sink's monitor, which
-    /// includes the one feeding the EQ, so using it here would leave audio
-    /// running dry into the device with the EQ permanently bypassed.
-    fn route_sink(&self, sink: &str, device: &str) -> Result<()> {
-        match crate::eq::nodes::chain_for_sink(sink) {
-            Some(chain) if self.eq.is_active() => {
-                // Same lock the graph-watch and the EQ's own chain-respawn
-                // path take: without it a user-triggered reroute can race
-                // either of them into a half-wired, doubly-linked graph.
-                let _wiring = self.eq.wiring_lock();
-                crate::eq::wiring::wire_through_eq(&*self.backend, chain, device)?;
-            }
-            _ => self.backend.route_sink_to_device(sink, device)?,
-        }
-        // Recorded so the link can be restored when the device comes back.
-        self.set_route(sink, device)?;
-        Ok(())
-    }
-
-    pub fn check_deps(&self) -> penguinwave_proto::SystemDeps {
-        system::check_deps(&*self.hid)
-    }
-
-    pub fn check_udev(&self) -> UdevStatus {
-        system::check_udev(
-            &self.devices.read().unwrap(),
-            &self.config.load_user_devices(),
-        )
-    }
+fn publish_sinks(state: &CoreState) -> Result<Response> {
+    let sinks = state.backend.list_sinks()?;
+    state.events.publish(Event::SinkListChanged {
+        sinks: sinks.clone(),
+    });
+    Ok(Response::Sinks(sinks))
 }

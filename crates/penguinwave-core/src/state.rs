@@ -9,7 +9,7 @@ use crate::sinks;
 use crate::EqManager;
 use penguinwave_hid::{DeviceChange, DeviceRegistry, HidBackend};
 use penguinwave_pipewire::{PipeWireBackend, WatchHandle};
-use penguinwave_proto::{DeviceId, Event, Snapshot};
+use penguinwave_proto::{DeviceId, Event, Snapshot, UdevStatus};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, RwLock};
 use std::time::Duration;
@@ -243,5 +243,38 @@ impl CoreState {
         *self.watch.lock().unwrap() = None;
         self.chatmix.stop();
         self.eq.shutdown();
+    }
+
+    pub fn check_deps(&self) -> penguinwave_proto::SystemDeps {
+        crate::system::check_deps(&*self.hid)
+    }
+
+    pub fn check_udev(&self) -> UdevStatus {
+        crate::system::check_udev(
+            &self.devices.read().unwrap(),
+            &self.config.load_user_devices(),
+        )
+    }
+
+    /// Point a sink at an output device.
+    ///
+    /// With the EQ inserted the whole chain is re-wired, not just the output.
+    /// `route_sink_to_device` drops every link from the sink's monitor, which
+    /// includes the one feeding the EQ, so using it here would leave audio
+    /// running dry into the device with the EQ permanently bypassed.
+    pub(crate) fn route_sink(&self, sink: &str, device: &str) -> Result<()> {
+        match crate::eq::nodes::chain_for_sink(sink) {
+            Some(chain) if self.eq.is_active() => {
+                // Same lock the graph-watch and the EQ's own chain-respawn
+                // path take: without it a user-triggered reroute can race
+                // either of them into a half-wired, doubly-linked graph.
+                let _wiring = self.eq.wiring_lock();
+                crate::eq::wiring::wire_through_eq(&*self.backend, chain, device)?;
+            }
+            _ => self.backend.route_sink_to_device(sink, device)?,
+        }
+        // Recorded so the link can be restored when the device comes back.
+        self.set_route(sink, device)?;
+        Ok(())
     }
 }
