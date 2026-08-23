@@ -2716,6 +2716,7 @@ dependencies = [
  "penguinwave-proto",
  "serde",
  "serde_json",
+ "zbus",
 ]
 
 [[package]]

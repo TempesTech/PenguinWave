@@ -1,5 +1,6 @@
 //! Penguin Wave audio daemon.
 
+mod dbus;
 mod framing;
 mod notify;
 mod ratelimit;
@@ -51,6 +52,9 @@ fn run() -> Result<(), String> {
 
     let running = Arc::new(AtomicBool::new(true));
     let supervisor = supervisor::spawn(state.clone(), running.clone());
+    // Kept alive for the daemon's lifetime; dropping it would leave the bus
+    // name and object registered but no longer served.
+    let _dbus = dbus::serve(state.clone());
 
     notify::ready();
     eprintln!("[daemon] listening on {}", path.display());
