@@ -14,3 +14,7 @@ penguinwave-hid = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
+
+[dev-dependencies]
+penguinwave-pipewire = { workspace = true, features = ["mock"] }
+penguinwave-hid = { workspace = true, features = ["mock"] }

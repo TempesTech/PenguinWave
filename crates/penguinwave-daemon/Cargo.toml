@@ -20,3 +20,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 libc = { workspace = true }
 zbus = { workspace = true }
+
+[dev-dependencies]
+penguinwave-pipewire = { workspace = true, features = ["mock"] }
+penguinwave-hid = { workspace = true, features = ["mock"] }

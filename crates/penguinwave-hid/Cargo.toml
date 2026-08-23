@@ -7,6 +7,9 @@ license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
 
+[features]
+mock = []
+
 [dependencies]
 penguinwave-proto = { workspace = true }
 hidapi = { workspace = true }

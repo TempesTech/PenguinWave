@@ -8,6 +8,7 @@ pub mod backend;
 pub mod chain;
 pub mod cmd;
 pub mod icons;
+#[cfg(feature = "mock")]
 pub mod mock;
 pub mod pactl;
 pub mod parse;
@@ -15,6 +16,7 @@ pub mod watch;
 
 pub use backend::PipeWireBackend;
 pub use chain::ChainProcess;
+#[cfg(feature = "mock")]
 pub use mock::MockBackend;
 pub use pactl::PactlBackend;
 pub use watch::{EventSink, WatchHandle};
