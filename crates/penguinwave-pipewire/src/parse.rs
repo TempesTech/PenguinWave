@@ -311,3 +311,110 @@ pub fn node_id_for(json: &str, node_name: &str) -> Option<u32> {
         .and_then(|o| o["id"].as_u64())
         .map(|id| id as u32)
 }
+
+/// Resolve a stream's display name.
+///
+/// `application.name` -> `application.process.binary` -> `media.name`.
+pub(crate) fn display_name(s: &RawStream) -> String {
+    if !s.stream.app_name.is_empty() {
+        return s.stream.app_name.clone();
+    }
+    if let Some(binary) = &s.binary {
+        return binary.clone();
+    }
+    if let Some(role) = &s.media_role {
+        return role.clone();
+    }
+    s.media_name.clone().unwrap_or_else(|| "Unknown".into())
+}
+
+/// Follow a sink's output through Penguin Wave's own plumbing nodes (the EQ,
+/// namely) until a real device turns up.
+///
+/// The sink's monitor lands on the EQ's input rather than a real device
+/// whenever the EQ is active; reporting that raw node name as "the device"
+/// is neither a real device nor something a device picker can match against.
+/// The EQ's input and output nodes are not bridged by a visible PipeWire
+/// link -- the filter-chain module wires them internally -- so crossing
+/// from one to the other has to go by the fixed naming convention rather
+/// than by following a link.
+pub(crate) fn trace_route(sink: &str, links: &[LinkInfo]) -> Option<String> {
+    let mut current = sink.to_string();
+    for _ in 0..4 {
+        if current.starts_with(penguinwave_proto::EQ_NODE_PREFIX) && !current.ends_with("_out") {
+            current = format!("{current}_out");
+            continue;
+        }
+
+        let next = links.iter().find(|l| {
+            l.source.node_name == current
+                && (l.source.port_name.starts_with("monitor_")
+                    || l.source.port_name.starts_with("output_"))
+        });
+        match next {
+            Some(l) if penguinwave_proto::is_own_node(&l.target.node_name) => {
+                current = l.target.node_name.clone();
+            }
+            Some(l) => return Some(l.target.node_name.clone()),
+            None => return None,
+        }
+    }
+    None
+}
+
+#[cfg(test)]
+mod trace_route_tests {
+    use super::trace_route;
+    use penguinwave_proto::{LinkInfo, PortRef};
+
+    fn link(src_node: &str, src_port: &str, dst_node: &str, dst_port: &str) -> LinkInfo {
+        LinkInfo {
+            source: PortRef {
+                node_name: src_node.to_string(),
+                port_name: src_port.to_string(),
+                id: None,
+            },
+            target: PortRef {
+                node_name: dst_node.to_string(),
+                port_name: dst_port.to_string(),
+                id: None,
+            },
+        }
+    }
+
+    #[test]
+    fn a_direct_link_to_a_real_device_is_reported_as_is() {
+        let links = vec![link(
+            "game_sink",
+            "monitor_FL",
+            "alsa_output.headset",
+            "playback_FL",
+        )];
+        assert_eq!(
+            trace_route("game_sink", &links),
+            Some("alsa_output.headset".to_string())
+        );
+    }
+
+    #[test]
+    fn a_route_through_the_eq_resolves_to_the_real_device_not_the_eq_node() {
+        let links = vec![
+            link("game_sink", "monitor_FL", "penguinwave_eq_game", "input_FL"),
+            link(
+                "penguinwave_eq_game_out",
+                "output_FL",
+                "alsa_output.headset",
+                "playback_FL",
+            ),
+        ];
+        assert_eq!(
+            trace_route("game_sink", &links),
+            Some("alsa_output.headset".to_string())
+        );
+    }
+
+    #[test]
+    fn no_link_at_all_is_not_a_device() {
+        assert_eq!(trace_route("game_sink", &[]), None);
+    }
+}
