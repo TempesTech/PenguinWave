@@ -3,9 +3,9 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use crate::audio::{PortRef, SinkConfig, StreamRef};
-use crate::device::{DeviceId, UserDevice};
-use crate::eq::{EqBand, EqChain, EqChainId};
+use crate::models::audio::{PortRef, SinkConfig, StreamRef};
+use crate::models::device::{DeviceId, UserDevice};
+use crate::models::eq::{EqBand, EqChain, EqChainId};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(tag = "method", content = "params", rename_all = "snake_case")]

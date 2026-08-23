@@ -4,9 +4,9 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::error::PwError;
-use crate::event::Event;
-use crate::request::Request;
-use crate::response::Response;
+use crate::models::event::Event;
+use crate::models::request::Request;
+use crate::models::response::Response;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[ts(export)]

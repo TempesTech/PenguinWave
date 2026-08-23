@@ -6,9 +6,9 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use crate::audio::{LinkInfo, OutputDevice, PortInfo, RouteInfo, SinkInfo, StreamInfo};
-use crate::device::{ChatMix, DeviceDescriptor, DeviceId, SystemDeps, UdevStatus, UserDevice};
-use crate::eq::{EqPresetMeta, EqState};
+use crate::models::audio::{LinkInfo, OutputDevice, PortInfo, RouteInfo, SinkInfo, StreamInfo};
+use crate::models::device::{ChatMix, DeviceDescriptor, DeviceId, SystemDeps, UdevStatus, UserDevice};
+use crate::models::eq::{EqPresetMeta, EqState};
 
 /// Everything a client needs to render from cold.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]

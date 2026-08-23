@@ -6,9 +6,9 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use crate::audio::{SinkInfo, StreamInfo};
-use crate::device::{ChatMix, DeviceId};
-use crate::eq::EqState;
+use crate::models::audio::{SinkInfo, StreamInfo};
+use crate::models::device::{ChatMix, DeviceId};
+use crate::models::eq::EqState;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(tag = "event", content = "data", rename_all = "snake_case")]
