@@ -14,7 +14,10 @@ const INVALIDATES: Record<DaemonEventName, string[][]> = {
   'stream.list_changed': [['getApplicationStreams'], ['getAudioCategories']],
   'sink.list_changed': [['getCustomVirtualSinks'], ['getAudioCategories'], ['getDefaultSink']],
   'graph.changed': [['getOutputDevices'], ['getNodePorts'], ['getAudioCategories']],
-  'chatmix.changed': [['getChatMix']],
+  // chatmix.changed is handled separately below: the event already carries
+  // the value, so invalidating and refetching the whole session snapshot
+  // for it turns every 100ms wheel tick into a full-state round trip.
+  'chatmix.changed': [],
   'eq.state_changed': [['getEqState']],
   'eq.safe_mode': [['getEqState']],
   'device.attached': [['getSupportedDevices']],
@@ -33,6 +36,10 @@ export function useDaemonEvents() {
 
   useEffect(() => {
     const unlisten = onAnyDaemonEvent((event) => {
+      if (event.event === 'chatmix.changed') {
+        queryClient.setQueryData(['getChatMix'], event.data);
+        return;
+      }
       for (const queryKey of INVALIDATES[event.event] ?? []) {
         void queryClient.invalidateQueries({ queryKey });
       }
