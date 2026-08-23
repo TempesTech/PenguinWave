@@ -1,5 +1,7 @@
 //! The boundary between headset models and `hidapi`.
 
+pub mod userdev;
+
 use crate::error::{HidError, Result};
 use hidapi::HidApi;
 use penguinwave_proto::DeviceId;

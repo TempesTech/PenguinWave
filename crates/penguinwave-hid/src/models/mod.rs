@@ -2,7 +2,7 @@
 
 pub mod steelseries;
 
-use crate::headset::Headset;
+use crate::domain::headset::Headset;
 use std::sync::Arc;
 
 /// Every model this build knows how to drive.

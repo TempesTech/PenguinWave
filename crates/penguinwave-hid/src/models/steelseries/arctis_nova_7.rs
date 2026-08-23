@@ -2,7 +2,7 @@
 
 use super::{CHATMIX_MIDDLE, DATA_REQUEST, VENDOR_ID};
 use crate::error::{HidError, Result};
-use crate::headset::{map, Headset};
+use crate::domain::headset::{map, Headset};
 use crate::transport::HidTransport;
 use penguinwave_proto::{Capability, DeviceId};
 

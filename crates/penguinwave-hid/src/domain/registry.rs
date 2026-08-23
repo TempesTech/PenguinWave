@@ -1,7 +1,7 @@
 //! Which headsets are known, which are plugged in, and which one is selected.
 
 use crate::error::{HidError, Result};
-use crate::headset::Headset;
+use crate::domain::headset::Headset;
 use crate::models;
 use crate::transport::{HidBackend, HidTransport};
 use penguinwave_proto::{BatteryInfo, DeviceDescriptor, DeviceId, DevicePresence};
