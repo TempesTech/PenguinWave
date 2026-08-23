@@ -5,7 +5,7 @@
 
 use clap::CommandFactory;
 
-#[path = "../src/cli.rs"]
+#[path = "../src/commands/mod.rs"]
 mod cli;
 
 #[test]

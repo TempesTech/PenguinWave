@@ -1,11 +1,11 @@
 //! Penguin Wave command line client.
 
-mod cli;
 mod client;
+mod commands;
 mod render;
 
 use clap::{CommandFactory, Parser};
-use cli::{ChatmixCmd, Cli, Command, DeviceCmd, EqCmd, GraphCmd, SinkCmd, StreamCmd, SystemCmd};
+use commands::{ChatmixCmd, Cli, Command, DeviceCmd, EqCmd, GraphCmd, SinkCmd, StreamCmd, SystemCmd};
 use client::Client;
 use penguinwave_proto::{
     DeviceId, EqBand, ErrorKind, PortRef, PwError, Request, Response, SinkConfig, StreamRef,
@@ -146,7 +146,7 @@ fn parse_device_id(spec: &str) -> Result<Option<DeviceId>, PwError> {
     )))
 }
 
-fn band(freq: f32, gain: f32, q: f32, filter: cli::Filter) -> EqBand {
+fn band(freq: f32, gain: f32, q: f32, filter: commands::Filter) -> EqBand {
     EqBand {
         freq,
         gain_db: gain,
