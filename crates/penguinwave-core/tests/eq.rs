@@ -1,4 +1,4 @@
-use penguinwave_core::config::ConfigStore;
+use penguinwave_core::domain::config::ConfigStore;
 use penguinwave_core::eq::nodes::sink_node_name;
 use penguinwave_core::{EqManager, EventBus};
 use penguinwave_pipewire::{MockBackend, PipeWireBackend};

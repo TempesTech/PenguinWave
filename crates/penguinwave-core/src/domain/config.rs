@@ -1,7 +1,7 @@
 //! On-disk state under `$XDG_CONFIG_HOME/penguinwave`.
 
 use crate::error::{io_err, CoreError, Result};
-use crate::routes::Routes;
+use crate::api::routes::Routes;
 use penguinwave_proto::{EqPreset, EqState, UserDevice};
 use serde::{de::DeserializeOwned, Serialize};
 use std::fs;

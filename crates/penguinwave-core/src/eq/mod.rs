@@ -12,9 +12,9 @@ pub mod presets;
 pub mod process;
 pub mod wiring;
 
-use crate::config::ConfigStore;
+use crate::domain::config::ConfigStore;
 use crate::error::{CoreError, Result};
-use crate::events::EventBus;
+use crate::domain::events::EventBus;
 use penguinwave_pipewire::{ChainProcess, PipeWireBackend};
 use penguinwave_proto::{
     EqBand, EqChain, EqChainId, EqPresetMeta, EqState, Event, GAIN_MAX, GAIN_MIN, MAX_BANDS,

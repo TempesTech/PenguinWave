@@ -8,19 +8,14 @@
 //! Contains no transport: it does not know that sockets exist.
 
 pub mod api;
-pub mod chatmix;
-pub mod config;
+pub mod domain;
 pub mod eq;
 pub mod error;
-pub mod events;
-pub mod routes;
-pub mod sinks;
 pub mod state;
-pub mod system;
 
 pub use api::dispatch;
-pub use config::ConfigStore;
+pub use domain::config::ConfigStore;
+pub use domain::events::EventBus;
 pub use eq::EqManager;
 pub use error::{CoreError, Result};
-pub use events::EventBus;
 pub use state::CoreState;

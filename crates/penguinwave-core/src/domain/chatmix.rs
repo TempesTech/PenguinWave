@@ -1,8 +1,8 @@
 //! ChatMix policy: turn a headset wheel position into sink volumes.
 
 use crate::error::Result;
-use crate::events::EventBus;
-use crate::sinks;
+use crate::domain::events::EventBus;
+use crate::domain::sinks;
 use penguinwave_hid::DeviceRegistry;
 use penguinwave_pipewire::PipeWireBackend;
 use penguinwave_proto::{ChatMix, Event, CHAT_SINK, GAME_SINK};

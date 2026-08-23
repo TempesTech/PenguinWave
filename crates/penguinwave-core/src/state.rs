@@ -1,11 +1,11 @@
 //! The daemon's owned state.
 
-use crate::chatmix::ChatMixController;
-use crate::config::ConfigStore;
+use crate::domain::chatmix::ChatMixController;
+use crate::domain::config::ConfigStore;
 use crate::error::Result;
-use crate::events::EventBus;
-use crate::routes::{self, Routes};
-use crate::sinks;
+use crate::domain::events::EventBus;
+use crate::api::routes::{self, Routes};
+use crate::domain::sinks;
 use crate::EqManager;
 use penguinwave_hid::{DeviceChange, DeviceRegistry, HidBackend};
 use penguinwave_pipewire::{PipeWireBackend, WatchHandle};
@@ -246,11 +246,11 @@ impl CoreState {
     }
 
     pub fn check_deps(&self) -> penguinwave_proto::SystemDeps {
-        crate::system::check_deps(&*self.hid)
+        crate::domain::system::check_deps(&*self.hid)
     }
 
     pub fn check_udev(&self) -> UdevStatus {
-        crate::system::check_udev(
+        crate::domain::system::check_udev(
             &self.devices.read().unwrap(),
             &self.config.load_user_devices(),
         )

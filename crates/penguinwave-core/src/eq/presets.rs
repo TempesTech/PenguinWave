@@ -1,6 +1,6 @@
 //! Compiled-in builtins plus user presets in `presets.json`.
 
-use crate::config::ConfigStore;
+use crate::domain::config::ConfigStore;
 use crate::error::{CoreError, Result};
 use penguinwave_proto::{EqBand, EqChain, EqPreset, EqPresetMeta, FilterType};
 

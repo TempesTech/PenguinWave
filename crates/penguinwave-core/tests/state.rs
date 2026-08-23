@@ -1,7 +1,8 @@
 mod common;
 use common::TempDir;
 
-use penguinwave_core::{dispatch, sinks, ConfigStore, CoreState};
+use penguinwave_core::domain::sinks;
+use penguinwave_core::{dispatch, ConfigStore, CoreState};
 use penguinwave_hid::MockBackend as MockHid;
 use penguinwave_pipewire::{MockBackend, PipeWireBackend};
 use penguinwave_proto::{DeviceId, Request, SinkConfig};

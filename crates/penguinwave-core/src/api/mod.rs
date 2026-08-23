@@ -3,6 +3,8 @@
 //! One function from `Request` to `Response`. The daemon owns framing and
 //! sessions; everything a method actually does lives here.
 
+pub mod routes;
+
 use crate::error::{CoreError, Result};
 use crate::state::CoreState;
 use penguinwave_pipewire::icons;
